@@ -1,0 +1,4369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#080C12">
+<title>Opencarb+ Reload</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* OPENCRAB+ v16 · YOMI STUDIO */
+
+/* ═══ TOKENS ═══════════════════════════════════ */
+:root {
+  /* ── 背景：三层，差值足够 ── */
+  --bg:#080C12;--s1:#0E1319;--s2:#151B24;--s3:#1E2632;
+  --ac:#5BA4D9;--ac2:#3D8BC2;
+  --up:#5EC4A0;--dn:#C47B7B;--gold:#C9AA5A;
+  --ink:#D0D6DE;--t2:#6E7A88;--t3:#3E4A58;
+  --ln:rgba(91,164,217,.08);
+  --r:12px;--r2:16px;--r3:22px;
+  --sp:cubic-bezier(.25,.8,.25,1);--eo:cubic-bezier(.16,1,.3,1);--p3:cubic-bezier(.05,.7,.1,1);
+}
+
+/* ═══ RESET ════════════════════════════════════ */
+*,*::before,*::after {
+  box-sizing:border-box;margin:0;padding:0;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+html,body {
+  height:100%;width:100%;overflow:hidden;
+  background:var(--bg);
+  font-family:'Noto Sans SC',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  color:var(--ink);
+}
+
+/* ═══ SPLASH ═══ */
+#splash{position:fixed;inset:0;z-index:9999;background:#080C12;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+
+/* 涟漪 */
+.sp-ripple{position:absolute;top:50%;left:50%;width:300px;height:300px;border-radius:50%;border:1px solid rgba(91,164,217,.06);transform:translate(-50%,-50%) scale(0);will-change:transform,opacity;animation:spRip 1.5s var(--p3) .1s both}
+.sp-r2{width:500px;height:500px;border-color:rgba(91,164,217,.04);animation-delay:.2s;animation-duration:1.8s}
+.sp-r3{width:700px;height:700px;border-color:rgba(91,164,217,.02);animation-delay:.3s;animation-duration:2s}
+@keyframes spRip{to{transform:translate(-50%,-50%) scale(1);opacity:0}}
+.sp-glow{position:absolute;top:50%;left:50%;width:280px;height:280px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(91,164,217,.06),rgba(91,164,217,.02) 40%,transparent 70%);opacity:0;animation:spGI 1s ease .1s both}
+@keyframes spGI{to{opacity:1}}
+
+/* 标题区——默认在中心 */
+.sp-ct{position:relative;z-index:2;text-align:center;transition:transform .7s var(--p3)}
+.sp-studio{font-size:9px;font-weight:500;letter-spacing:6px;text-transform:uppercase;color:rgba(208,214,222,.2);margin-bottom:18px;opacity:0;animation:spFU .5s var(--p3) .3s both}
+.sp-clip{overflow:hidden;padding-bottom:4px}
+.sp-title{font-size:48px;font-weight:900;letter-spacing:0;line-height:1;color:rgba(208,214,222,.92);transform:translateY(105%);animation:spSl .5s var(--p3) .4s both}
+@keyframes spSl{to{transform:none}}
+.sp-title em{font-style:normal;color:var(--ac);opacity:0;animation:spPl .4s ease .8s both}
+@keyframes spPl{0%{opacity:0;filter:blur(6px)}60%{opacity:1;text-shadow:0 0 32px rgba(91,164,217,.4)}100%{opacity:1;text-shadow:0 0 12px rgba(91,164,217,.2)}}
+.sp-sub{font-size:10px;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:rgba(208,214,222,.2);margin-top:14px;opacity:0;animation:spFU .4s ease .9s both}
+@keyframes spFU{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sp-scanline{position:absolute;top:50%;left:0;right:0;height:1px;z-index:1;background:linear-gradient(90deg,transparent 5%,rgba(91,164,217,.12) 30%,rgba(91,164,217,.04) 50%,rgba(91,164,217,.12) 70%,transparent 95%);transform:scaleX(0);animation:spSc .3s var(--p3) 1.1s both}
+@keyframes spSc{to{transform:scaleX(1);opacity:0}}
+
+/* phase2：标题上移→欢迎区域出现 */
+#splash.phase2 .sp-ct{transform:translateY(-60px)}
+#splash.phase2 .sp-studio,#splash.phase2 .sp-sub{opacity:0;transition:opacity .3s}
+
+/* 欢迎区域——phase2时淡入 */
+.sp-welcome{position:relative;z-index:2;text-align:center;margin-top:40px;opacity:0;transform:translateY(16px);pointer-events:none;transition:all .6s var(--p3)}
+#splash.phase2 .sp-welcome{opacity:1;transform:none;pointer-events:auto}
+.sp-wt{font-size:10px;font-weight:600;color:rgba(208,214,222,.3);letter-spacing:4px;margin-bottom:28px;line-height:1.3}
+.sp-wt-name{display:block;font-size:30px;font-weight:900;color:rgba(208,214,222,.9);letter-spacing:1px;margin-top:8px;text-shadow:0 0 28px rgba(91,164,217,.2)}
+.sp-wt-name em{font-style:normal;color:var(--ac);text-shadow:0 0 20px rgba(91,164,217,.5)}
+.sp-wt-reload{display:block;font-size:11px;font-weight:600;letter-spacing:6px;color:rgba(208,214,222,.35);margin-top:6px;text-transform:uppercase}
+.sp-wt em{font-style:normal;color:var(--ac)}
+.sp-ages{display:flex;flex-direction:column;gap:14px;width:220px;margin:0 auto}
+.sp-age-btn{
+  width:100%;padding:16px;border:1px solid rgba(91,164,217,.12);border-radius:14px;
+  background:rgba(91,164,217,.04);color:var(--ink);font-size:15px;font-weight:600;
+  font-family:inherit;cursor:pointer;text-align:center;transition:all .2s var(--eo);
+}
+.sp-age-btn:active{transform:scale(.95);background:rgba(91,164,217,.1)}
+.sp-age-btn.selected{border-color:rgba(91,164,217,.35);background:rgba(91,164,217,.12);color:#8ED4FF;box-shadow:0 0 16px rgba(91,164,217,.1)}
+
+/* 蓝幕 */
+.sp-curtain{position:absolute;inset:0;z-index:100;pointer-events:none;background:linear-gradient(135deg,#1B3D6E,#2855A0,#1C4580);transform:translateX(-110%);will-change:transform}
+.sp-curtain.sweep{animation:spCurtain .8s cubic-bezier(.2,0,0,1) forwards}
+@keyframes spCurtain{0%{transform:translateX(-110%)}35%{transform:translateX(0)}60%{transform:translateX(0)}100%{transform:translateX(110%)}}
+#splash.exit{pointer-events:none}
+#splash.behind{background:transparent}
+#splash.behind .sp-ct,#splash.behind .sp-welcome,#splash.behind .sp-ripple,#splash.behind .sp-glow,#splash.behind .sp-scanline{opacity:0!important;transition:none}
+
+/* 孩童放大 */
+body.a11y-child .sp-age-btn{padding:20px;font-size:17px}
+
+/* ═══════════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════════ */
+#app{
+  position:fixed;inset:0;display:flex;justify-content:center;
+  background:var(--bg);opacity:0;
+}
+#app.on{opacity:1}
+.shell{
+  width:100%;max-width:430px;height:100%;height:100dvh;
+  background:var(--bg);display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* ── 入场编排 ── */
+.topbar{
+  flex-shrink:0;
+  background:rgba(14,19,25,.88);backdrop-filter:blur(32px) saturate(120%);-webkit-backdrop-filter:blur(32px) saturate(120%);
+  border-bottom:1px solid rgba(91,164,217,.06);
+  padding-top:max(env(safe-area-inset-top,44px),44px);
+  padding-bottom:12px;padding-left:18px;padding-right:14px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:20;
+  opacity:0;transform:translateY(-100%);
+  animation:slideDown .52s var(--eo) .04s both;
+}
+@keyframes slideDown{to{opacity:1;transform:translateY(0)}}
+
+.card{
+  background:var(--s1);
+  border-radius:var(--r);
+  border:1px solid rgba(91,164,217,.06);border-left:2px solid rgba(91,164,217,.18);
+  opacity:0;transform:translateY(-14px) scale(.978);
+  animation:cardUp .65s var(--eo) both;
+transition:border-left-color 1.5s ease
+}
+@keyframes cardUp{0%{opacity:0;transform:translateY(14px);filter:blur(2px)}100%{opacity:1;transform:none;filter:blur(0)}}
+.d1{animation-delay:.08s}.d2{animation-delay:.18s}.d3{animation-delay:.28s}
+.d4{animation-delay:.38s}.d5{animation-delay:.48s}
+
+.hint-wrap {opacity:0;transform:translateY(-14px) scale(.978);animation:cardUp .58s var(--sp) .44s both}
+
+/* 顶栏 */
+.tb-l{display:flex;align-items:center;gap:10px}
+.tb-logo{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  background:var(--ac);
+  display:flex;align-items:center;justify-content:center;
+}
+.tb-logo svg{width:15px;height:13px}
+.tb-name{font-size:14px;font-weight:700;letter-spacing:0;line-height:1.15}
+.tb-name em{font-style:normal;color:var(--ac);font-weight:400}
+.tb-r{display:flex;align-items:center;gap:8px}
+
+.icon-btn{
+  width:40px;height:40px;border-radius:var(--r);
+  border:1px solid var(--ln);background:var(--s2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s var(--sp),background .15s;
+}
+.icon-btn:active{opacity:.7}
+
+/* 滚动 */
+.scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:14px 14px 80px;
+  display:flex;flex-direction:column;gap:10px;
+  /* 顶部渐变淡出效果 */
+  -webkit-overflow-scrolling:touch;
+  mask-image:linear-gradient(to bottom,#000,#000 calc(100% - 24px),transparent);
+  -webkit-mask-image:linear-gradient(to bottom,#000,#000 calc(100% - 24px),transparent);
+}
+.scroll::-webkit-scrollbar{display:none}
+
+/* section 头 */
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--ln);}
+.sh::before{content:'';display:block;width:2px;height:18px;border-radius:1px;background:var(--ac);flex-shrink:0}
+.sh>span{font-size:11px;font-weight:600;color:var(--t2);letter-spacing:1.5px}
+.ping{width:4px;height:4px;border-radius:50%;background:var(--ac);margin-left:auto;flex-shrink:0;opacity:.5;animation:pingDot 3s ease-in-out infinite}
+@keyframes pingDot{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ═══════════════════════════════════════════════════
+   HINT CARD
+═══════════════════════════════════════════════════ */
+.hint-card{
+  background:var(--s1);border-radius:var(--r);
+  border:1px solid var(--ln);
+  padding:16px 18px 18px;position:relative;overflow:hidden;
+}
+.hint-card::before{
+  content:'';position:absolute;top:0;right:0;width:140px;height:140px;pointer-events:none;
+  display:none;
+}
+.h-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.h-ttl{font-size:12px;font-weight:700;color:var(--ink);letter-spacing:.5px;padding-left:10px;border-left:3px solid var(--ac);border-radius:1px}
+.h-x{
+  background:var(--s2);border:1px solid var(--ln);border-radius:8px;
+  width:44px;height:44px;color:var(--t2);cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+}
+.h-x:active{background:var(--s3);color:var(--ink)}
+.h-steps{display:flex;flex-direction:column;gap:10px}
+.h-step{display:flex;align-items:flex-start;gap:11px}
+.h-num{
+  width:20px;height:20px;border-radius:4px;flex-shrink:0;margin-top:2px;
+  background:var(--s3);border:1px solid var(--ln);
+  color:var(--t2);font-size:10px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+}
+.h-text{font-size:12.5px;color:var(--t2);line-height:1.74}
+.h-text b{color:var(--ink);font-weight:700}
+
+/* ═══════════════════════════════════════════════════
+   PRICE CARD
+═══════════════════════════════════════════════════ */
+.price-card{padding:16px;}
+.price-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.price-num{
+  font-size:38px;font-weight:700;line-height:1;
+  letter-spacing:-.5px;
+  transition:color .5s var(--eo);
+  font-variant-numeric:tabular-nums;
+}
+.price-num.up{color:var(--up);text-shadow:0 0 24px rgba(94,196,160,.1)}
+.price-num.dn{color:var(--dn);text-shadow:0 0 24px rgba(196,123,123,.1)}
+.price-num.tick{animation:priceTick .3s var(--eo)}
+@keyframes priceTick{0%{opacity:.6;transform:translateY(-4px)}100%{opacity:1;transform:none}}
+.chip{
+  padding:4px 10px;border-radius:3px;
+  font-size:11px;font-weight:700;letter-spacing:.3px;
+  transition:all .35s var(--eo);
+  font-variant-numeric:tabular-nums;
+}
+.chip.up  {background:rgba(50,215,75,.1); color:var(--up);}
+.chip.dn  {background:rgba(255,59,48,.1); color:var(--dn);}
+.chip.flat{background:var(--s2);color:var(--t3);}
+canvas{width:100%!important;display:block}
+.chart-ft{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-top:5px}
+.mood-row{
+  display:flex;align-items:center;gap:8px;
+  margin-top:14px;padding:10px 0 0;border-top:1px solid var(--ln);
+  background:none;
+}
+.mood-lbl{font-size:11px;color:var(--t3);}
+.mood-track{flex:1;height:2px;background:var(--s3);border-radius:100px;overflow:hidden}
+.mood-fill{
+  height:100%;border-radius:100px;
+  transition:width .9s var(--eo),background .9s;
+  box-shadow:0 0 8px rgba(91,164,217,.2);
+}
+.mood-val{font-size:12px;font-weight:500;min-width:30px;text-align:right;color:var(--t2)}
+
+/* 市场事件横幅 */
+.ev-wrap{
+  margin-top:8px;padding:10px 13px 10px 16px;border-radius:9px;
+  border:1px solid var(--ln);
+  background:var(--s2);
+  position:relative;overflow:hidden;
+  display:none;
+}
+.ev-wrap.show{display:block;animation:evSlide .5s var(--eo) both;box-shadow:0 0 24px rgba(91,164,217,.04)}
+@keyframes evSlide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+/* 重置动画 */
+.ev-wrap.show.replay{animation:evSlide .44s var(--sp) both}
+.ev-wrap::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:var(--ac);
+}
+.ev-row{display:flex;align-items:flex-start;gap:9px}
+.ev-icon{font-size:19px;flex-shrink:0;margin-top:1px}
+.ev-name{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--t3);margin-bottom:3px}
+.ev-text{font-size:12px;color:var(--ink);line-height:1.65}
+
+/* ═══════════════════════════════════════════════════
+   ASSET CARD
+═══════════════════════════════════════════════════ */
+.asset-card{padding:16px;}
+.abox-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.abox{
+  background:var(--s2);
+  border-radius:var(--r);
+  border:1px solid var(--ln);
+  padding:16px;
+  transition:transform .2s var(--sp);
+}
+.abox:active{transform:scale(.96)}
+.abox-lbl{font-size:11px;color:var(--t3);margin-bottom:5px;letter-spacing:.8px;font-weight:500}
+.abox-val{font-size:22px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.abox-val.tick{animation:numTick .26s var(--sp)}
+@keyframes numTick{0%{transform:translateY(-7px);opacity:.4}100%{transform:translateY(0);opacity:1}}
+.abox-sub{font-size:10px;color:var(--t3);margin-top:3px}
+.pnl-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--s2);border:1px solid var(--ln);
+  border-radius:var(--r);padding:10px 14px;margin-top:8px;
+}
+.pnl-lbl{font-size:11px;color:var(--t3);font-weight:500;}
+.pnl-val{font-size:16px;font-weight:700;transition:color .25s;font-variant-numeric:tabular-nums}
+.streak-row{
+  display:flex;align-items:center;gap:10px;margin-top:10px;
+  padding:10px 14px;background:var(--s2);border-radius:var(--r);border:1px solid var(--ln);
+}
+.streak-lbl{font-size:12px;color:var(--t2);font-weight:400;flex:1}
+.streak-n{font-size:20px;font-weight:600;color:var(--ac)}
+
+/* 里程碑称号 */
+.badge{border-radius:var(--r);padding:11px 14px;display:none;align-items:center;gap:10px}
+.badge.broke{display:flex;background:rgba(196,123,123,.06);border:1px solid rgba(196,123,123,.1)}
+.badge.active{display:flex;background:rgba(91,164,217,.06);border:1px solid rgba(91,164,217,.12)}
+.badge.rich{display:flex;background:rgba(255,214,0,.05);border:1px solid rgba(255,214,0,.11)}
+.badge-icon{font-size:22px}
+.badge-title{font-size:13px;font-weight:700}
+.badge-sub{font-size:11px;color:var(--t2);margin-top:1px}
+
+/* ═══════════════════════════════════════════════════
+   TRADE CARD
+═══════════════════════════════════════════════════ */
+.trade-card{padding:16px;}
+.trade-tip{font-size:13px;color:var(--t2);padding-bottom:12px;line-height:1.68;border-bottom:1px solid var(--ln);margin-bottom:12px;}
+.qty-lbl{font-size:11px;font-weight:500;color:var(--t3);margin-bottom:8px}
+.qty-row{display:flex;gap:5px;margin-bottom:12px}
+.qty-btn{
+  flex:1;padding:12px 0;min-height:44px;
+  border:1px solid var(--ln);background:var(--s2);
+  border-radius:var(--r);font-size:13px;font-weight:500;color:var(--t2);
+  cursor:pointer;font-family:inherit;transition:background .15s,color .15s;
+}
+.qty-btn:not(.on):active{opacity:.7}
+.qty-btn.on{background:rgba(91,164,217,.15);border-color:rgba(91,164,217,.3);color:var(--ac);}
+.trade-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-buy,.btn-sell{
+  height:56px;border:none;border-radius:8px;
+  cursor:pointer;font-family:inherit;
+  font-size:14px;font-weight:700;letter-spacing:.5px;letter-spacing:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  position:relative;overflow:hidden;
+  transition:transform .18s var(--sp),filter .15s;
+  -webkit-user-select:none;user-select:none;
+}
+.btn-buy {background:rgba(94,196,160,.06);color:var(--up);border:1px solid rgba(94,196,160,.12);border-radius:8px;box-shadow:inset 0 0 20px rgba(94,196,160,.04)}
+.btn-sell{background:rgba(196,123,123,.06);color:var(--dn);border:1px solid rgba(196,123,123,.12);border-radius:8px;
+  box-shadow:inset 0 0 20px rgba(196,123,123,.04)}
+.btn-buy:active{opacity:.85;transform:scale(.97);box-shadow:0 0 20px rgba(94,196,160,.15)}
+.btn-sell:active{opacity:.85;transform:scale(.97);box-shadow:0 0 20px rgba(196,123,123,.15)}
+.rpl{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.rp{position:absolute;border-radius:50%;background:rgba(255,255,255,.22);transform:scale(0);animation:rpAnim .52s var(--p3) forwards}
+@keyframes rpAnim{to{transform:scale(4.5);opacity:0}}
+.btn-sub{font-size:11px;opacity:.8;font-weight:600}
+.quick-row{display:flex;gap:6px;margin-top:8px}
+.quick-btn{
+  flex:1;padding:10px 0;border:none;border-radius:var(--r);
+  font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;
+  transition:opacity .15s,transform .15s;
+}
+.quick-btn.buy {background:transparent;color:var(--up);border:1px solid rgba(94,196,160,.15)}
+.quick-btn.sell{background:transparent;color:var(--dn);border:1px solid rgba(255,69,58,.2)}
+.quick-btn:active{opacity:.7}
+.pred-sect{margin-top:12px;padding-top:12px;border-top:1px solid var(--ln)}
+.pred-lbl{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:9px}
+.pred-lbl::before{display:none}
+.pred-row{display:flex;gap:8px}
+.pred-btn{
+  flex:1;padding:12px 0;min-height:44px;border:none;border-radius:var(--r);
+  font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:opacity .15s,transform .15s;
+}
+.pred-btn.up  {background:transparent;color:var(--up);border:1px solid rgba(94,196,160,.15)}
+.pred-btn.down{background:transparent;color:var(--dn);border:1px solid rgba(255,69,58,.18)}
+.pred-btn.lit {background:rgba(94,196,160,.08)}
+.pred-btn:active{opacity:.7}
+.pred-hint{font-size:11px;text-align:center;color:var(--t3);margin-top:8px;min-height:16px;transition:color .3s}
+
+/* ═══════════════════════════════════════════════════
+   CATCH BUTTON
+═══════════════════════════════════════════════════ */
+
+.catch-btn:active{opacity:.8;transform:scale(.98)}
+
+@keyframes crabFloat{0%,100%{transform:translateY(0) rotate(-3deg)}25%{transform:translateY(-3px) rotate(2deg)}50%{transform:translateY(1px) rotate(-2deg)}75%{transform:translateY(-2px) rotate(3deg)}}
+.catch-hint{font-size:10px;display:block;margin-top:2px;letter-spacing:.2px;color:var(--t3)}
+
+/* ═══════════════════════════════════════════════════
+   LOG
+═══════════════════════════════════════════════════ */
+.log-card{padding:16px;}
+.log-empty{font-size:12px;color:var(--t3);text-align:center;padding:20px 0;font-style:italic}
+.log-item{display:flex;align-items:center;gap:8px;padding:12px 0;min-height:44px;border-bottom:1px solid var(--ln);animation:logIn .25s var(--eo)}
+@keyframes logIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.log-item:last-child{border-bottom:none}
+.log-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:3px;flex-shrink:0;letter-spacing:.5px}
+.log-tag.buy {background:rgba(48,209,88,.1);color:var(--up)}
+.log-tag.sell{background:rgba(255,69,58,.1);color:var(--dn)}
+.log-qty {font-size:12px;color:var(--t2)}
+.log-price{font-size:12px;font-weight:700;color:var(--ink);margin-left:auto}
+.log-pnl {font-size:10px;font-weight:700;flex-shrink:0;margin-left:5px}
+.log-time{font-size:10px;color:var(--t3);flex-shrink:0}
+
+/* ═══════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════ */
+#toast{
+  position:fixed;top:max(env(safe-area-inset-top,60px),60px);left:50%;
+  transform:translateX(-50%) translateY(-20px);
+  z-index:9600;
+  background:rgba(10,10,18,.96);
+  color:var(--ink);
+  padding:10px 22px;
+  border-radius:var(--r);border-left:3px solid var(--ac);
+  font-size:13px;font-weight:600;letter-spacing:.15px;
+  white-space:nowrap;
+  border:1px solid rgba(255,255,255,.09);
+  box-shadow:
+    0 12px 40px rgba(0,0,0,.6);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  opacity:0;
+  transition:opacity .2s var(--eo),transform .2s var(--eo);
+  pointer-events:none;
+}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);z-index:9700}
+
+/* ═══════════════════════════════════════════════════
+   CIRCUIT BREAKER
+═══════════════════════════════════════════════════ */
+#circuit{
+  position:fixed;inset:0;z-index:7000;
+  background:rgba(255,69,58,0);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  visibility:hidden;pointer-events:none;
+  transition:background .32s ease;
+  will-change:background;
+}
+#circuit.on{visibility:visible;pointer-events:auto;background:rgba(196,123,123,.85);}
+.cb-ico{font-size:56px;animation:cbShake .4s ease infinite alternate;
+  opacity:0;transform:scale(.6) translateY(8px);
+  transition:opacity .3s .1s ease,transform .3s .1s var(--eo);}
+#circuit.on .cb-ico{opacity:1;transform:scale(1) translateY(0)}
+@keyframes cbShake{from{transform:rotate(-9deg) scale(.95)}to{transform:rotate(9deg) scale(1.05)}}
+.cb-ttl{font-size:20px;font-weight:900;color:#fff;letter-spacing:1px;text-transform:uppercase;
+  opacity:0;transform:translateY(10px);
+  transition:opacity .28s .18s ease,transform .28s .18s var(--eo);}
+#circuit.on .cb-ttl{opacity:1;transform:translateY(0)}
+.cb-body{font-size:13px;color:rgba(255,255,255,.8);text-align:center;padding:0 40px;line-height:1.7;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .26s .24s ease,transform .26s .24s ease;}
+#circuit.on .cb-body{opacity:1;transform:translateY(0)}
+.cb-cd{font-size:64px;font-weight:900;color:#fff;animation:cbThrob .9s ease infinite;
+  opacity:0;transform:scale(.4);
+  transition:opacity .32s .3s ease,transform .32s .3s var(--sp);}
+#circuit.on .cb-cd{opacity:1;transform:scale(1)}
+@keyframes cbThrob{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+/* ═══════════════════════════════════════════════════
+   GAME LAYER
+═══════════════════════════════════════════════════ */
+#game-layer{
+  position:fixed;inset:0;z-index:6000;
+  background:var(--bg);display:flex;flex-direction:column;
+  visibility:hidden;pointer-events:none;
+  opacity:0;transform:translateX(40px) translateZ(0);
+  transition:opacity .3s var(--eo),transform .4s var(--p3);
+  will-change:transform,opacity;
+}
+#game-layer.on{visibility:visible;pointer-events:auto;opacity:1;transform:none;}
+.g-hdr{
+  flex-shrink:0;background:var(--s1);
+  padding-top:max(env(safe-area-inset-top,44px),44px);
+  padding-bottom:13px;padding-left:18px;padding-right:14px;
+  display:flex;align-items:center;gap:12px;position:relative;
+}
+/* neon 底线——与 topbar 同一设计语言 */
+.g-hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ac),transparent 72%)}
+.g-title{font-size:15px;font-weight:900;color:var(--ink);letter-spacing:2px;text-transform:uppercase}
+.g-title::before{display:none}
+.g-sub{font-size:11px;color:var(--t2);margin-top:3px;min-height:15px;transition:color .3s}
+.g-timer{
+  font-size:42px;font-weight:900;color:var(--ac);
+  font-variant-numeric:tabular-nums;letter-spacing:-2px;
+  
+  transition:color .3s;margin-right:4px;
+}
+.g-timer.warn{
+  color:var(--dn);text-shadow:0 0 24px rgba(255,69,58,.5);
+  animation:timerPanic .32s ease infinite alternate;
+}
+@keyframes timerPanic{from{transform:scale(1)}to{transform:scale(1.14)}}
+.g-exit{
+  width:38px;height:38px;border-radius:var(--r);
+  border:1px solid rgba(255,69,58,.22);background:rgba(255,69,58,.07);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--dn);
+  transition:transform .2s var(--sp),background .15s;flex-shrink:0;
+}
+.g-exit:active{background:rgba(255,69,58,.2);transform:scale(.86)}
+.g-prog{flex-shrink:0;height:2px;background:rgba(255,255,255,.06)}
+.g-bar{height:100%;background:linear-gradient(90deg,#3D8BC2,#5BA4D9);transition:width 1s linear}
+/* 注意：warn 时用 background 直接覆盖，不经过 transition 避免 .6s 延迟 */
+.g-bar.warn{background:linear-gradient(90deg,#8B2A40,var(--dn));transition:width 1s linear}
+.g-stats{
+  flex-shrink:0;background:var(--s1);border-bottom:1px solid var(--ln);
+  padding:9px 18px;display:flex;justify-content:space-around;
+}
+.gs{text-align:center}
+.gs-n{font-size:20px;font-weight:900;color:var(--ac);}
+.gs-n.pop{animation:statPop .2s cubic-bezier(.34,1.8,.64,1)}
+@keyframes statPop{0%{transform:scale(1)}40%{transform:scale(1.6)}100%{transform:scale(1)}}
+.gs-l{font-size:10px;color:var(--t3);margin-top:3px;}
+#play-area{
+  flex:1;position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 44% at 22% 10%,rgba(91,164,217,.042) 0%,transparent 56%),
+    radial-gradient(ellipse 56% 52% at 80% 90%,rgba(43,138,135,.028) 0%,transparent 50%),
+    var(--bg);
+  transition:background .8s;
+}
+#play-area.warn-bg{
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 24%,rgba(255,69,58,.048) 0%,transparent 56%),
+    var(--bg);
+}
+
+/* 螃蟹 */
+.crab{
+  position:absolute;line-height:1;cursor:pointer;
+  user-select:none;will-change:transform,opacity;
+  padding:10px;box-sizing:content-box;
+  animation:cPop .26s var(--sp) both;
+}
+.crab .em{display:block;font-size:62px;line-height:1;pointer-events:none;filter:drop-shadow(0 4px 14px rgba(0,0,0,.4))}
+@keyframes cPop{0%{transform:scale(0) rotate(-30deg);opacity:0}68%{transform:scale(1.2) rotate(6deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+.crab.idle{animation:cIdle 2.8s ease-in-out infinite}
+@keyframes cIdle{0%,100%{transform:translateY(0) rotate(-4deg) scale(1)}50%{transform:translateY(-10px) rotate(4deg) scale(1.05)}}
+.crab.caught{animation:cCatch .22s cubic-bezier(.2,0,0,1) forwards!important;pointer-events:none}
+@keyframes cCatch{0%{transform:scale(1) rotate(0);opacity:1}20%{transform:scale(1.4) rotate(-8deg);opacity:1}100%{transform:scale(0) rotate(15deg);opacity:0}}
+.crab.rare .em{font-size:56px}
+.crab.rare{animation:cPop .26s var(--sp) both,rarePulse .85s ease-in-out .3s infinite}
+@keyframes rarePulse{0%,100%{filter:drop-shadow(0 0 10px rgba(255,214,0,.44)) drop-shadow(0 4px 14px rgba(0,0,0,.4))}50%{filter:drop-shadow(0 0 28px rgba(255,214,0,1)) drop-shadow(0 4px 14px rgba(0,0,0,.4))}}
+.crab.scary{animation:cPop .18s var(--sp) both,scaryW .32s ease-in-out infinite alternate}
+.crab.scary .em{filter:drop-shadow(0 0 10px rgba(255,69,58,.8)) hue-rotate(155deg) drop-shadow(0 4px 14px rgba(0,0,0,.4))}
+@keyframes scaryW{from{transform:rotate(-10deg) scale(1)}to{transform:rotate(10deg) scale(1.08)}}
+.crab.golden .em{font-size:72px;filter:drop-shadow(0 0 30px rgba(255,214,0,1)) drop-shadow(0 0 10px rgba(255,255,255,.5)) drop-shadow(0 4px 14px rgba(0,0,0,.4))}
+.crab.golden{animation:cPop .26s var(--sp) both,goldPulse .65s ease-in-out .3s infinite}
+@keyframes goldPulse{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.1) rotate(3deg)}}
+
+/* 弹出效果 */
+.score-pop{position:absolute;font-size:28px;font-weight:900;pointer-events:none;z-index:20;text-shadow:0 2px 12px rgba(0,0,0,.6);animation:scoreFly .5s cubic-bezier(.2,0,0,1) forwards}
+@keyframes scoreFly{0%{opacity:1;transform:translateY(0) scale(.5)}15%{opacity:1;transform:translateY(-16px) scale(1.5)}100%{opacity:0;transform:translateY(-60px) scale(.7)}}
+.combo-pop{position:absolute;font-size:16px;font-weight:900;pointer-events:none;z-index:25;letter-spacing:3px;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,.6);animation:comboBurst .4s cubic-bezier(.2,0,0,1) forwards}
+@keyframes comboBurst{0%{opacity:0;transform:scale(.2)}20%{opacity:1;transform:scale(1.4) translateY(-8px)}100%{opacity:0;transform:scale(.8) translateY(-40px)}}
+.pt{position:absolute;border-radius:50%;width:10px;height:10px;pointer-events:none;z-index:15;animation:ptBurst .4s cubic-bezier(.1,0,0,1) forwards}
+@keyframes ptBurst{0%{opacity:1;transform:translate(0,0) scale(1.3)}100%{opacity:0;transform:var(--tx,0) scale(0)}}
+.gold-flash{position:absolute;inset:0;pointer-events:none;z-index:30;background:radial-gradient(ellipse 70% 70% at center,rgba(201,170,90,.25) 0%,transparent 60%);opacity:0}
+.gold-flash.go{animation:gFlash .5s cubic-bezier(.2,0,0,1) forwards}
+@keyframes gFlash{0%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1)}}
+
+/* ═══ P3R结算屏 ═══ */
+
+/* 蓝幕扫入 */
+
+  65%{transform:translateX(0)}
+  100%{transform:translateX(110%)}
+
+/* 结算屏背景——冰蓝单色调 */
+#battle-result{
+  position:fixed;inset:0;z-index:6100;
+  background:#070E1A;
+  display:flex;flex-direction:column;
+  visibility:hidden;pointer-events:none;opacity:0;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+}
+#battle-result::-webkit-scrollbar{display:none}
+#battle-result.on{visibility:visible;pointer-events:auto;opacity:1}
+#battle-result::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(91,164,217,.012) 2px,rgba(91,164,217,.012) 3px),
+    radial-gradient(ellipse 120% 80% at 50% 120%,rgba(91,164,217,.04),transparent 50%);
+}
+#battle-result::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%,rgba(91,164,217,.06),transparent 50%),
+    radial-gradient(ellipse 40% 40% at 85% 60%,rgba(91,164,217,.03),transparent 45%);
+}
+
+/* banner——蓝调渐变 */
+.br-banner{
+  position:relative;z-index:2;flex-shrink:0;
+  padding:max(env(safe-area-inset-top,24px),24px) 24px 50px;
+  background:linear-gradient(135deg,#0A1830 0%,#122848 50%,#163058 100%);
+  box-shadow:inset 0 -1px 0 rgba(91,164,217,.1);
+  clip-path:polygon(0 0,100% 0,100% 65%,0 100%);
+  opacity:0;transform:translateX(-40px);
+}
+.br-banner.show{animation:brSlideR .5s var(--p3) both}
+@keyframes brSlideR{from{opacity:0;transform:translateX(-50px)}to{opacity:1;transform:none}}
+.br-banner::after{content:'';position:absolute;right:20px;bottom:20px;font-size:48px;color:rgba(91,164,217,.06);line-height:1;pointer-events:none}
+.br-ep{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(91,164,217,.5);margin-bottom:8px}
+.br-h1{font-size:22px;font-weight:900;color:#fff;letter-spacing:.3px;line-height:1.2}
+
+/* emoji */
+.br-emoji{position:relative;z-index:2;flex-shrink:0;text-align:center;padding:18px 0 4px;font-size:64px;opacity:0}
+.br-emoji.show{animation:brEmoIn .5s var(--sp) .15s both}
+@keyframes brEmoIn{from{opacity:0;transform:scale(.2) rotate(-20deg)}to{opacity:1;transform:none}}
+
+/* 统计行——从左右交替滑入 */
+.br-stats{position:relative;z-index:2;flex-shrink:0;padding:0 16px;display:flex;flex-direction:column}
+.br-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:13px 16px;border-bottom:1px solid rgba(91,164,217,.06);
+  position:relative;overflow:hidden;opacity:0;
+}
+.br-row::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--ac);transform:scaleY(0);transform-origin:bottom;
+  transition:transform .3s var(--sp);
+}
+.br-row.from-l::before,.br-row.from-r::before{transform:scaleY(1)}
+.br-row.from-l{animation:brFromL .4s var(--p3) both;will-change:transform,opacity}
+.br-row.from-r{animation:brFromR .4s var(--p3) both;will-change:transform,opacity}
+@keyframes brFromL{from{opacity:0;transform:translateX(-50px)}to{opacity:1;transform:none}}
+@keyframes brFromR{from{opacity:0;transform:translateX(50px)}to{opacity:1;transform:none}}
+.br-row-lbl{font-size:9px;color:rgba(255,255,255,.3);font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.br-row-val{font-size:22px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums}
+.br-row-val.neon{color:#7CC4F0;text-shadow:0 0 14px rgba(91,164,217,.35)}
+.br-row-val.gold{color:var(--gold);text-shadow:0 0 16px rgba(201,170,90,.3)}
+
+/* 效率条 */
+.br-bar-wrap{position:relative;z-index:2;flex-shrink:0;padding:14px 16px 0}
+.br-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.br-bar-lbl{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--t3)}
+.br-bar-pct{font-size:12px;font-weight:700;color:var(--ac)}
+.br-bar-track{height:4px;background:rgba(91,164,217,.08);border-radius:100px;overflow:hidden}
+.br-bar-fill{
+  height:100%;width:0;border-radius:100px;
+  background:linear-gradient(90deg,#3D8BC2,#5BA4D9);
+  transition:width 1s var(--p3);will-change:width;
+}
+
+/* VERDICT——P3R标志性的大字 */
+.br-vw{
+  position:relative;z-index:2;flex-shrink:0;
+  margin:16px 0 0;padding:16px 24px;
+  background:linear-gradient(100deg,rgba(91,164,217,.06),transparent);
+  border-top:2px solid var(--ac);
+  opacity:0;transform:scaleX(.4);transform-origin:left;
+}
+.br-vw.show{animation:verdictIn .45s var(--sp) both;will-change:transform,opacity}
+@keyframes verdictIn{to{opacity:1;transform:scaleX(1)}}
+.br-verdict{font-size:30px;font-weight:900;letter-spacing:10px;text-transform:uppercase;color:#8ED4FF;text-shadow:0 0 16px rgba(142,212,255,.5),0 0 40px rgba(91,164,217,.25);position:relative}
+
+.br-verdict.record{color:#E8D080;text-shadow:0 0 20px rgba(201,170,90,.5),0 0 40px rgba(201,170,90,.2)}
+
+/* 关闭按钮 */
+.br-close-wrap{position:relative;z-index:2;flex-shrink:0;flex:1;display:flex;align-items:flex-end;
+  padding:16px 16px max(env(safe-area-inset-bottom,16px),16px)}
+.br-close-btn{
+  width:100%;padding:16px;border:none;border-radius:var(--r);
+  background:linear-gradient(135deg,rgba(91,164,217,.12),rgba(91,164,217,.06));
+  border:1px solid rgba(91,164,217,.2);
+  color:#7CC4F0;font-size:15px;font-weight:700;
+  cursor:pointer;font-family:inherit;opacity:0;
+  transition:transform .15s var(--sp);
+}
+.br-close-btn.show{animation:btnRise .35s var(--sp) both;will-change:transform,opacity}
+@keyframes btnRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.br-close-btn:active{transform:scale(.97)}
+
+/* ═══════════════════════════════════════════════════
+   ABOUT SHEET  ──  风花雪月，优雅而不俗
+   ───────────────────────────────────────────────
+   设计理念：
+   · 每位制作者都有一句属于自己的「心声」，
+     不是客套，是真正想说的话
+   · 面板整体有轻微的浮光纹理，像一张用心的信纸
+   · 每一行都有自己的入场时机，像翻书的节奏
+═══════════════════════════════════════════════════ */
+#about-wrap{position:fixed;inset:0;z-index:9000;display:flex;align-items:flex-end;justify-content:center;visibility:hidden;pointer-events:none}
+#about-wrap.on{visibility:visible;pointer-events:auto}
+.about-scrim{
+  position:absolute;inset:0;
+  background:transparent;
+  transition:background .36s;
+}
+#about-wrap.on .about-scrim{background:rgba(0,0,0,.68)}
+
+.about-panel{
+  position:relative;width:100%;max-width:430px;
+  background:var(--s1);
+  border-radius:var(--r3) var(--r3) 0 0;
+  border:1px solid rgba(255,255,255,.08);border-bottom:none;
+  padding:0 0 max(env(safe-area-inset-bottom,28px),28px);
+  transform:translateY(100%) translateZ(0);
+  will-change:transform;
+  transition:transform .42s var(--p3);
+  box-shadow:0 -12px 50px rgba(0,0,0,.55),0 -1px 0 rgba(255,255,255,.05);
+  overflow:hidden;
+}
+#about-wrap.on .about-panel{transform:translateY(0) translateZ(0)}
+#about-wrap.closing .about-panel{transform:translateY(100%) translateZ(0);transition:transform .24s var(--eo)}
+#about-wrap.closing .about-scrim{background:transparent}
+
+/* 顶部装饰光带 */
+.about-panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 8%,rgba(91,164,217,.35) 38%,rgba(91,164,217,.18) 62%,transparent 92%);
+}
+
+/* 滚动容器 */
+.about-scroll{
+  max-height:82vh;overflow-y:auto;
+  padding:16px 20px 4px;
+  -webkit-overflow-scrolling:touch;
+}
+.about-scroll::-webkit-scrollbar{display:none}
+
+/* 拖拽指示条 */
+.about-pill{
+  width:40px;height:4px;
+  background:rgba(255,255,255,.12);
+  border-radius:2px;margin:14px auto 22px;
+}
+
+/* 头部 */
+.about-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.about-logo{
+  width:52px;height:52px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,#3D8BC2,#5BA4D9);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 24px rgba(91,164,217,.26),0 4px 12px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;
+}
+/* logo 内光晕 */
+.about-logo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%);
+}
+.about-logo svg{width:28px;height:24px;position:relative;z-index:1}
+.about-app{font-size:21px;font-weight:900;letter-spacing:-.3px}
+.about-ver{font-size:11px;color:var(--t3);margin-top:3px;letter-spacing:.3px}
+
+/* ── 制作人区域 ── */
+/* 区块标题 */
+.about-section-title{
+  font-size:9px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--t3);
+  margin-bottom:10px;margin-top:2px;
+  display:flex;align-items:center;gap:6px;
+}
+.about-section-title::before{content:'◆';font-size:6px;color:var(--ac);opacity:.6}
+
+.maker-list{display:flex;flex-direction:column;gap:0}
+
+/* 每个制作人卡片 */
+/* opacity 不设在基础状态——只在 .on 内触发，防 reopen 后动画已结束 */
+.maker-row{
+  display:flex;align-items:center;gap:13px;
+  padding:11px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.maker-row:last-child{border-bottom:none}
+
+#about-wrap.on .maker-row{
+  opacity:0;transform:translateX(-16px);
+  animation:makerIn .5s var(--sp) forwards;
+}
+@keyframes makerIn{to{opacity:1;transform:translateX(0)}}
+#about-wrap.on .maker-row:nth-child(1){animation-delay:.08s}
+#about-wrap.on .maker-row:nth-child(2){animation-delay:.15s}
+#about-wrap.on .maker-row:nth-child(3){animation-delay:.22s}
+#about-wrap.on .maker-row:nth-child(4){animation-delay:.29s}
+
+/* 头像 */
+.maker-av{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  border:1.5px solid rgba(255,255,255,.07);
+  box-shadow:0 2px 10px rgba(0,0,0,.3);
+  position:relative;overflow:hidden;margin-top:2px;
+}
+.maker-av::after{
+  content:'';position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,255,255,.1) 0%,transparent 55%);
+}
+
+.maker-info{flex:1;min-width:0}
+.maker-name{
+  font-size:15px;font-weight:700;color:var(--ink);
+  margin-bottom:5px;
+}
+/* 小标签 */
+.maker-tag{
+  display:inline-block;margin-top:6px;
+  font-size:9px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--t3);
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:4px;padding:2px 7px;
+}
+
+/* ── 名言区域 ── */
+.quote-section{margin-top:16px}
+.quote-card{
+  position:relative;
+  padding:14px 16px 14px 20px;
+  border-radius:var(--r);
+  background:linear-gradient(135deg,rgba(91,164,217,.055),rgba(91,164,217,.015));
+  border:1px solid rgba(91,164,217,.1);
+  overflow:hidden;
+  cursor:pointer;
+  transition:background .3s,border-color .3s;
+}
+.quote-card:active{background:linear-gradient(135deg,rgba(91,164,217,.09),rgba(91,164,217,.03))}
+/* 左侧竖线 */
+.quote-card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:linear-gradient(180deg,var(--ac),rgba(91,164,217,.25));
+}
+/* 装饰引号 */
+.quote-card::after{
+  content:'"';
+  position:absolute;right:14px;bottom:-2px;
+  font-size:56px;font-weight:900;line-height:1;
+  color:rgba(91,164,217,.06);
+  font-family:Georgia,serif;
+  pointer-events:none;
+}
+.quote-text{
+  font-size:12.5px;color:rgba(255,255,255,.78);
+  line-height:1.78;letter-spacing:.15px;
+  font-style:italic;
+  position:relative;z-index:1;
+}
+.quote-author{
+  margin-top:7px;
+  font-size:10px;font-weight:700;
+  color:var(--ac);opacity:.72;
+  letter-spacing:.5px;
+  position:relative;z-index:1;
+}
+.quote-tap{
+  font-size:9px;color:var(--t3);margin-top:8px;
+  letter-spacing:.5px;text-transform:uppercase;
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:4px;
+}
+.quote-tap::before{content:'↺';font-size:11px;display:inline-block;transition:transform .3s var(--sp)}
+.quote-card:active .quote-tap::before{transform:rotate(180deg)}
+
+/* 名言淡入动画 */
+.quote-card.refresh{animation:quoteFade .38s var(--eo)}
+@keyframes quoteFade{0%{opacity:.3;transform:translateY(4px)}100%{opacity:1;transform:translateY(0)}}
+
+/* ── 献词 ── */
+.dedication{
+  margin-top:16px;padding:16px 18px 15px;
+  background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(91,164,217,.018));
+  border:1px solid rgba(91,164,217,.09);
+  border-left:2px solid rgba(91,164,217,.45);
+  border-radius:var(--r);
+  position:relative;overflow:hidden;
+}
+.dedication::after{
+  content:'❦';
+  position:absolute;right:14px;bottom:10px;
+  font-size:28px;color:rgba(91,164,217,.07);
+  pointer-events:none;line-height:1;
+}
+.dedication p{
+  font-size:12px;color:var(--t2);
+  line-height:2.2;font-style:italic;
+  letter-spacing:.25px;opacity:.84;
+}
+.dedication p+p{margin-top:0}
+
+/* ── 页脚 ── */
+.about-foot{
+  text-align:center;font-size:11px;color:var(--t3);
+  margin-top:18px;margin-bottom:0;
+  line-height:2;letter-spacing:.2px;
+}
+.about-foot strong{color:var(--ac);font-weight:700}
+.about-foot-note{
+  font-size:10px;color:rgba(255,255,255,.1);
+  margin-top:6px;line-height:1.6;letter-spacing:.2px;
+}
+
+/* ═══════════════════════════════════════════════════
+   HERM-01  ──  沉默寡言的市场助手
+   · 悬浮右下角，不遮挡操作区域
+   · 点击展开/收起，说完就退场
+═══════════════════════════════════════════════════ */
+#herm-btn {
+  position: fixed;
+  bottom: max(env(safe-area-inset-bottom,80px),80px);
+  right: 18px;
+  z-index: 5000;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(91,164,217,.12);
+  cursor: pointer;
+  background: var(--s2);
+  border: 1px solid rgba(91,164,217,.2);
+  box-shadow:
+    0 4px 16px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s var(--sp), box-shadow .3s;
+  animation: hermFloat 3s ease-in-out infinite;
+}
+@keyframes hermFloat {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+#herm-btn.pulse {
+  animation: hermFloat 3s ease-in-out infinite, hermPulse .6s ease;
+}
+@keyframes hermPulse {
+  0%   { box-shadow: 0 4px 18px rgba(91,164,217,.32), 0 0 0 0 rgba(91,164,217,.5); }
+  60%  { box-shadow: 0 4px 18px rgba(91,164,217,.32), 0 0 0 18px rgba(91,164,217,0); }
+  100% { box-shadow: 0 4px 18px rgba(91,164,217,.32), 0 0 0 0 rgba(91,164,217,0); }
+}
+#herm-btn:active { transform: scale(.88) !important; }
+
+/* 未读红点 */
+#herm-dot {
+  position: absolute; top: 0; right: 0;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--dn);
+  border: 2px solid var(--bg);
+  display: none;
+}
+#herm-dot.show { display: block; animation: hermDotIn .3s var(--sp); }
+@keyframes hermDotIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+/* 气泡 */
+#herm-bubble {
+  position: fixed;
+  bottom: max(env(safe-area-inset-bottom,136px),136px);
+  right: 18px;
+  z-index: 5001;
+  width: min(272px, calc(100vw - 40px));
+  background: var(--s1);
+  border: 1px solid rgba(91,164,217,.14);
+  border-radius: 16px 16px 4px 16px;
+  padding: 16px 18px 14px;
+  /* 多层阴影：深邃、有质感 */
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.3),
+    0 12px 40px rgba(0,0,0,.5),
+    0 0 0 1px rgba(91,164,217,.04) inset,
+    0 1px 0 rgba(255,255,255,.03) inset;
+  opacity: 0; pointer-events: none;
+  transform: translateX(16px);
+  transform-origin: bottom right;
+  transition: opacity .25s var(--eo), transform .3s var(--p3);
+}
+#herm-bubble.show {
+  opacity: 1; pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* 气泡头 ── 极简：名字 + 关闭 */
+.herm-bubble-head {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(91,164,217,.1);
+}
+.herm-name {
+  font-size: 11px; font-weight: 700;
+  color: var(--ac); letter-spacing: 2px;
+  text-transform: uppercase; opacity: .8;
+}
+.herm-close-btn {
+  width: 32px; height: 32px; border-radius: 50%;min-width:32px;
+  border: none; background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--t3); flex-shrink: 0;
+  transition: color .15s;
+  padding: 0;
+}
+.herm-close-btn:hover { color: var(--t2); }
+.herm-close-btn:active { color: var(--ink); }
+
+/* 消息文字 */
+.herm-msg {
+  font-size: 14px; color: rgba(208,214,222,.8);
+  line-height: 1.78; letter-spacing: .15px;
+}
+.herm-msg em {
+  font-style: normal;
+  color: var(--ink);
+  font-weight: 500;
+}
+/* 时间戳 */
+.herm-time {
+  font-size: 9px; color: var(--t3); margin-top: 10px;
+  text-align: right; letter-spacing: .5px;
+  opacity: .6;
+}
+
+/* 气泡小尾巴 — 用伪元素双层叠加，兼容性更好 */
+#herm-bubble::before {
+  content: '';
+  position: absolute; bottom: -8px; right: 22px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(91,164,217,.2);
+}
+#herm-bubble::after {
+  content: '';
+  position: absolute; bottom: -6px; right: 23px;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid var(--s1);
+}
+
+/* 模态框 */
+/* ── MODAL ── transition 驱动，入退场均顺滑 */
+#modal{
+  position:fixed;inset:0;z-index:9500;
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  visibility:hidden;pointer-events:none;
+}
+#modal.on  { visibility:visible;pointer-events:auto; }
+.modal-scrim{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0);
+  transition:background .3s ease;
+  will-change:background;
+}
+#modal.on      .modal-scrim { background:rgba(0,0,0,.7); }
+#modal.closing .modal-scrim { background:rgba(0,0,0,0); }
+.modal-box{
+  position:relative;z-index:1;
+  width:100%;max-width:316px;
+  background:var(--s1);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:var(--r3);
+  padding:32px 26px 26px;
+  text-align:center;
+  box-shadow:0 24px 64px rgba(0,0,0,.5);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  overflow:hidden;
+  /* 初始：缩小+偏移 */
+  opacity:0;
+  transform:scale(.92) translateY(16px) translateZ(0);
+  transition:
+    opacity  .35s var(--eo),
+    transform .4s var(--p3);
+  will-change:transform,opacity;
+}
+.modal-box::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(91,164,217,.25),transparent);
+}
+#modal.on .modal-box{
+  opacity:1;
+  transform:scale(1) translateY(0) translateZ(0);
+}
+#modal.closing .modal-box{
+  opacity:0;
+  transform:scale(.92) translateY(8px) translateZ(0);
+  transition:
+    opacity  .22s var(--eo),
+    transform .22s var(--eo);
+}
+.modal-ico{
+  font-size:46px;margin-bottom:14px;line-height:1;
+  display:block;
+  will-change:transform,opacity;
+}
+/* icon 单独弹入，比 box 稍慢，有层次感 */
+#modal.on .modal-ico{
+  animation:modalIcoIn .52s var(--sp) .06s both;
+}
+@keyframes modalIcoIn{
+  from{transform:scale(.3) rotate(-15deg);opacity:0}
+  to  {transform:scale(1)  rotate(0);     opacity:1}
+}
+.modal-ttl{
+  font-size:17px;font-weight:900;
+  color:var(--ink);letter-spacing:-.3px;margin-bottom:8px;
+}
+.modal-body{
+  font-size:13px;color:var(--t2);
+  line-height:1.72;margin-bottom:22px;
+  white-space:pre-line;
+}
+.modal-btns{display:flex;gap:8px}
+.m-cancel,.m-ok{
+  flex:1;padding:14px 10px;border:none;border-radius:12px;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:transform .16s var(--sp),box-shadow .16s;
+  -webkit-tap-highlight-color:transparent;
+  will-change:transform;
+}
+.m-cancel{background:var(--s2);border:1px solid rgba(255,255,255,.1);color:var(--t2);}
+.m-ok{
+  background:linear-gradient(145deg,#1d6b68,#3D8BC2,var(--ac));
+  color:#fff;
+  box-shadow:0 4px 18px rgba(91,164,217,.26),inset 0 1px 0 rgba(255,255,255,.14);
+}
+.m-cancel:active{transform:scale(.93)}
+.m-ok:active    {transform:scale(.93);box-shadow:0 2px 8px rgba(91,164,217,.18)}
+
+/* ═══════════════════════════════════════════════════
+   ACCESSIBILITY  ──  辅助功能 · 每个人都值得好好玩游戏
+═══════════════════════════════════════════════════ */
+
+/* 字体等级 */
+body.a11y-text-md { --fsc: 1.15; }
+body.a11y-text-lg { --fsc: 1.28; }
+body.a11y-text-xl { --fsc: 1.45; }
+body[class*="a11y-text-"] .price-num     { font-size: calc(48px * var(--fsc,1)); }
+body[class*="a11y-text-"] .abox-val      { font-size: calc(22px * var(--fsc,1)); }
+body[class*="a11y-text-"] .btn-buy,
+body[class*="a11y-text-"] .btn-sell      { height: calc(62px * var(--fsc,1)); font-size: calc(18px * var(--fsc,1)); }
+body[class*="a11y-text-"] .catch-btn     { height: calc(64px * var(--fsc,1)); font-size: calc(16px * var(--fsc,1)); }
+body[class*="a11y-text-"] .qty-btn,
+body[class*="a11y-text-"] .quick-btn     { font-size: calc(12px * var(--fsc,1)); padding: calc(9px * var(--fsc,1)) 0; }
+body[class*="a11y-text-"] .h-text,
+body[class*="a11y-text-"] .trade-tip,
+body[class*="a11y-text-"] .herm-msg      { font-size: calc(12.5px * var(--fsc,1)); line-height: 1.85; }
+body[class*="a11y-text-"] .log-qty,
+body[class*="a11y-text-"] .log-price,
+body[class*="a11y-text-"] .log-time      { font-size: calc(12px * var(--fsc,1)); }
+
+/* 高对比度 */
+body.a11y-hc {
+  --s1: #000; --s2: #111; --s3: #1a1a1a;
+  --neon: #5BA4D9; --red: #C47B7B; --gold: #C9AA5A;
+  --ink: #FFFFFF; --t2: #CCCCCC; --t3: #888;
+  --ln: rgba(255,255,255,.22);
+}
+body.a11y-hc .btn-buy  { background: #1A3040; }
+body.a11y-hc .btn-sell { background: #3A2020; }
+body.a11y-hc .card, body.a11y-hc .hint-card { border-width: 2px; }
+
+/* 色觉辅助（蓝橙代替红绿，适合色盲/色弱）*/
+body.a11y-colorblind .chip.up   { background: rgba(100,180,255,.15); color: #64B4FF; border-color: rgba(100,180,255,.22); }
+body.a11y-colorblind .chip.dn   { background: rgba(255,160,80,.12);  color: #FFA050; border-color: rgba(255,160,80,.18); }
+body.a11y-colorblind .price-num.up { color: #64B4FF; }
+body.a11y-colorblind .price-num.dn { color: #FFA050; }
+body.a11y-colorblind .btn-buy   { background: linear-gradient(145deg,#1a4a8a,#2a6abf,#64B4FF); }
+body.a11y-colorblind .btn-sell  { background: linear-gradient(145deg,#7a4000,#b05a00,#FFA050); }
+body.a11y-colorblind .log-tag.buy  { background: rgba(100,180,255,.1); color: #64B4FF; border-color: rgba(100,180,255,.15); }
+body.a11y-colorblind .log-tag.sell { background: rgba(255,160,80,.08); color: #FFA050; border-color: rgba(255,160,80,.13); }
+
+/* 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+body.a11y-motion *, body.a11y-motion *::before, body.a11y-motion *::after {
+  animation-duration: .01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important;
+}
+
+/* 单手模式：所有交互区域放大 */
+body.a11y-onehand .trade-btns    { gap: 12px; }
+body.a11y-onehand .btn-buy,
+body.a11y-onehand .btn-sell      { height: 76px; border-radius: 14px; font-size: 20px; letter-spacing: .3px; }
+body.a11y-onehand .quick-btn     { padding: 13px 0; font-size: 13px; }
+body.a11y-onehand .catch-btn     { height: 80px; font-size: 18px; }
+body.a11y-onehand .qty-btn       { padding: 13px 0; font-size: 14px; }
+body.a11y-onehand .pred-btn      { padding: 14px 0; font-size: 14px; }
+body.a11y-onehand .icon-btn      { width: 38px; height: 38px; }
+body.a11y-onehand .g-exit        { width: 44px; height: 44px; font-size: 18px; }
+
+/* ── 无障碍面板 ── */
+#a11y-panel {
+  position: fixed; inset: 0; z-index: 9800;
+  display: flex; align-items: flex-end; justify-content: center;
+  /* visibility 不影响 transition，比 display:none 更流畅 */
+  visibility: hidden; pointer-events: none;
+}
+#a11y-panel.on { visibility: visible; pointer-events: auto; }
+.a11y-scrim {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background .28s ease;
+}
+#a11y-panel.on .a11y-scrim { background: rgba(0,0,0,.62); }
+.a11y-sheet {
+  position: relative; width: 100%; max-width: 430px;
+  background: var(--s1); border-radius: 22px 22px 0 0;
+  border: 1px solid rgba(255,255,255,.08); border-bottom: none;
+  /* 初始在屏幕外 */
+  transform: translateY(100%) translateZ(0);
+  will-change: transform;
+  transition: transform .36s var(--p3);
+  box-shadow: 0 -10px 48px rgba(0,0,0,.55);
+  overflow: hidden;
+}
+#a11y-panel.on .a11y-sheet { transform: translateY(0) translateZ(0); }
+#a11y-panel.closing .a11y-sheet { transform:translateY(100%) translateZ(0);transition:transform .24s var(--eo); }
+#a11y-panel.closing .a11y-scrim { background: rgba(0,0,0,0); }
+.a11y-scroll {
+  max-height: 88vh; overflow-y: auto;
+  padding: 14px 20px max(env(safe-area-inset-bottom,28px),28px);
+}
+.a11y-scroll::-webkit-scrollbar { display: none; }
+.a11y-pill { width: 36px; height: 4px; background: rgba(255,255,255,.12); border-radius: 2px; margin: 0 auto 20px; }
+.a11y-head {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+}
+.a11y-title   { font-size: 17px; font-weight: 900; color: var(--ink); }
+.a11y-subtitle { font-size: 12px; color: var(--t3); margin-bottom: 20px; line-height: 1.65; }
+.a11y-group   { margin-bottom: 22px; }
+.a11y-group-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--t3);
+  margin-bottom: 8px; padding-left: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.a11y-group-label::before { content: "◆"; color: var(--ac); font-size: 6px; opacity: .6; }
+.a11y-rows { display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; border: 1px solid var(--ln); }
+.a11y-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 16px; min-height: 56px; background: var(--s2);
+  border-bottom: 1px solid var(--ln);
+}
+.a11y-row:last-child { border-bottom: none; }
+.a11y-row-icon {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 16px;
+}
+.a11y-row-body { flex: 1; min-width: 0; }
+.a11y-row-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.a11y-row-desc { font-size: 11px; color: var(--t3); margin-top: 2px; line-height: 1.55; }
+.a11y-toggle {
+  position: relative; width: 56px; height: 32px; min-width: 56px; flex-shrink: 0;
+  background: rgba(255,255,255,.1); border: 1.5px solid rgba(255,255,255,.08);
+  border-radius: 100px; cursor: pointer;
+  transition: background .22s, border-color .22s;
+  -webkit-tap-highlight-color: transparent;
+}
+.a11y-toggle::after {
+  content: ""; position: absolute;
+  width: 26px; height: 26px; border-radius: 50%;
+  top: 2px; left: 2px;
+  background: #fff; opacity: .35;
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  transition: transform .24s var(--sp), opacity .2s;
+}
+.a11y-toggle.on { background: rgba(91,164,217,.25); border-color: rgba(91,164,217,.45); }
+.a11y-toggle.on::after { transform: translateX(24px); opacity: 1; background: #D0D6DE; }
+.a11y-toggle:active { opacity: .7; }
+.a11y-font-row {
+  padding: 13px 14px; background: var(--s2);
+  border-bottom: 1px solid var(--ln);
+  display: flex; align-items: center; gap: 12px;
+}
+.a11y-font-btns { display: flex; gap: 6px; margin-left: auto; }
+.a11y-font-btn {
+  width: 44px; height: 36px; border-radius: 8px;
+  border: 1.5px solid var(--ln); background: var(--s3);
+  cursor: pointer; font-family: inherit; color: var(--t2);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; transition: all .18s var(--sp);
+}
+.a11y-font-btn.on { background: rgba(91,164,217,.1); border-color: rgba(91,164,217,.25); color: var(--ac); }
+.a11y-font-btn:active { transform: scale(.92); }
+.a11y-note {
+  font-size: 11px; color: var(--t3); margin-top: 16px;
+  line-height: 1.75; padding: 0 4px; text-align: center;
+}
+.a11y-note strong { color: var(--ac); font-weight: 600; }
+
+/* 护眼柔化 */
+body.a11y-warm { filter: sepia(.18) brightness(.96); }
+body.a11y-warm .price-num.up { color: #5DC9C0; }
+
+/* 行间距 */
+body.a11y-spacing .h-text,
+body.a11y-spacing .trade-tip,
+body.a11y-spacing .log-qty,
+body.a11y-spacing .log-price,
+body.a11y-spacing .herm-msg,
+body.a11y-spacing .dedication p,
+body.a11y-spacing .ev-text,
+body.a11y-spacing .a11y-row-desc,
+body.a11y-spacing .abox-lbl,
+body.a11y-spacing .pred-hint { line-height: 2.0 !important; }
+
+/* 加大触控区域：min 44×44pt（Apple HIG 标准）*/
+body.a11y-touch .btn-buy,
+body.a11y-touch .btn-sell     { min-height: 68px; }
+body.a11y-touch .catch-btn    { min-height: 76px; }
+body.a11y-touch .qty-btn      { padding: 14px 0; }
+body.a11y-touch .quick-btn    { padding: 13px 0; }
+body.a11y-touch .pred-btn     { padding: 15px 0; }
+body.a11y-touch .icon-btn     { width: 44px; height: 44px; border-radius: 12px; }
+body.a11y-touch .herm-close-btn { width: 32px; height: 32px; }
+body.a11y-touch .herm-btn     { width: 52px; height: 52px; }
+body.a11y-touch .h-x          { width: 36px; height: 36px; font-size: 15px; }
+body.a11y-touch .g-exit       { width: 48px; height: 48px; font-size: 18px; }
+body.a11y-touch .a11y-toggle  { width: 56px; height: 32px; }
+body.a11y-touch .a11y-toggle::after { width: 26px; height: 26px; }
+body.a11y-touch .a11y-toggle.on::after { transform: translateX(24px); }
+body.a11y-touch .log-item     { padding: 13px 0; }
+
+/* 游戏时长按钮 */
+.a11y-duration-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 14px; border-radius: 10px;
+  background: var(--s2); border: 1px solid var(--ln);
+}
+.a11y-dur-btns { display: flex; gap: 5px; flex-shrink: 0; }
+.a11y-dur-btn {
+  padding: 10px 14px; border-radius: 8px;
+  border: 1px solid var(--ln); background: var(--s3);
+  font-size: 11px; font-weight: 700; color: var(--t2);
+  cursor: pointer; font-family: inherit;
+  transition: all .18s var(--sp);
+}
+.a11y-dur-btn.on {
+  background: rgba(91,164,217,.08); border-color: rgba(91,164,217,.2);
+  color: var(--ac);
+}
+.a11y-dur-btn:active { transform: scale(.91); }
+
+/* a11y-scroll */
+
+/* ── 成就徽章 CSS ── */
+.achieve-wrap {
+  display: block;
+  animation: cardUp .5s var(--sp) both;
+}
+.achieve-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 10px; margin-top: 4px;
+}
+.ach-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px;
+  padding: 14px 8px; border-radius: 12px;
+  background: var(--s2); border: 1px solid var(--ln);
+  transition: all .2s var(--sp);
+  position: relative; overflow: hidden;
+  cursor: pointer; -webkit-user-select: none; user-select: none;
+}
+.ach-item:active { transform: scale(.92); }
+.ach-item:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
+.ach-item.unlocked {
+  background: linear-gradient(145deg, rgba(91,164,217,.06), transparent);
+  border-color: rgba(91,164,217,.15);
+  border-left:2px solid rgba(91,164,217,.25);
+}
+.ach-item.locked { opacity: .38; filter: grayscale(.8); }
+
+  100% { transform: scale(1) rotate(0); }
+
+.ach-icon  { font-size: 28px; line-height: 1; }
+.ach-name  { font-size: 10px; font-weight: 700; color: var(--t2); text-align: center; letter-spacing: .3px; }
+.ach-name.lit { color: var(--ac); }
+.ach-lock  { position: absolute; top: 6px; right: 6px; font-size: 9px; color: var(--t3); }
+.ach-date  { font-size: 9px; color: var(--t3); margin-top: 1px; text-align: center; }
+
+/* ── 每日挑战 CSS ── */
+.daily-card { padding: 16px 18px; }
+.daily-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.daily-badge {
+  font-size: 10px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--gold);
+  background: rgba(255,214,0,.1); border: 1px solid rgba(255,214,0,.2);
+  padding: 3px 10px; border-radius: 100px;
+}
+.daily-list { display: flex; flex-direction: column; gap: 10px; }
+.daily-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 10px;
+  background: var(--s2); border: 1px solid var(--ln);
+  transition: border-color .3s;
+}
+.daily-item.done { border-color: rgba(91,164,217,.22); }
+.daily-check {
+  width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+  border: 1.5px solid var(--t3); display: flex; align-items: center;
+  justify-content: center; font-size: 11px; transition: all .3s var(--sp);
+}
+.daily-item.done .daily-check {
+  background: var(--ac); border-color: var(--ac); color: #000;
+}
+.daily-body { flex: 1; }
+.daily-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.daily-desc { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.daily-reward {
+  font-size: 11px; font-weight: 700; color: var(--ac);
+  background: rgba(91,164,217,.08); border: 1px solid rgba(91,164,217,.14);
+  padding: 4px 10px; border-radius: 100px; flex-shrink: 0; white-space: nowrap;
+}
+.daily-reset { font-size: 10px; color: var(--t3); text-align: center; margin-top: 10px; }
+
+/* 防误触：使用原生 confirm 逻辑，无需 CSS */
+
+/* 包容性声明区块 */
+.a11y-inclusion {
+  margin-top: 20px; padding: 20px 20px 18px;
+  border-radius: 14px;
+  background: var(--s2);
+  border: 1px solid rgba(255,255,255,.07);
+}
+.a11y-inclusion-title {
+  font-size: 13px; font-weight: 700; color: var(--ink);
+  margin-bottom: 12px;
+}
+.a11y-inclusion-body p {
+  font-size: 12.5px; color: var(--t2); line-height: 1.84;
+  margin-bottom: 8px;
+}
+.a11y-inclusion-body p:first-child { color: var(--ink); font-weight: 500; }
+.a11y-inclusion-close {
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid var(--ln);
+}
+.a11y-inclusion-close strong {
+  font-size: 13px; color: var(--ink); font-weight: 700;
+}
+
+/* 危机援助 */
+.a11y-crisis {
+  margin-top: 10px; padding: 16px 18px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(91,164,217,.06), rgba(91,164,217,.02));
+  border: 1px solid rgba(91,164,217,.12);
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.a11y-crisis-icon {
+  font-size: 20px; flex-shrink: 0; margin-top: 1px; line-height: 1;
+}
+.a11y-crisis-title {
+  font-size: 12px; font-weight: 700; color: var(--ink);
+  margin-bottom: 7px;
+}
+.a11y-crisis-text {
+  font-size: 14px; color: var(--t2); line-height: 2;
+}
+.a11y-crisis-text strong { color: var(--ac); font-weight: 700; }
+.a11y-crisis-note {
+  font-size: 11px; color: var(--t3); margin-top: 7px;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════
+   WELCOME SCREEN  ──  首次欢迎屏
+   · 全程 GPU 合成层，60fps
+   · 父容器 opacity transition 淡入，子元素独立入场
+   · 退场：scale + opacity，无 layout
+═══════════════════════════════════════════════════ */
+
+/* ── 星空粒子 ── */
+
+/* ── 内容区 ── */
+
+/* 所有入场元素的公共初始态 */
+
+/* ── Logo ── */
+
+/* ── 主标题 ── */
+
+/* ── 感谢语 ── */
+
+/* ── 署名区 ── */
+
+/* ── 轻触提示：用 opacity 做呼吸（GPU，不用 color）── */
+
+/* ── Yomi Studio 宣言 ── */
+.yomi-manifesto {
+  margin-top: 22px;
+  padding: 20px 20px 18px;
+  border-radius: 14px;
+  background: var(--s2);
+  border: 1px solid var(--ln);
+  display: flex; flex-direction: column; gap: 7px;
+}
+.ym-line {
+  font-size: 13px; color: var(--t2);
+  line-height: 1.72; letter-spacing: .1px;
+}
+.ym-welcome {
+  font-size: 14px; font-weight: 700;
+  color: var(--ink); letter-spacing: -.1px;
+}
+.ym-accent {
+  color: var(--ac); font-weight: 600;
+}
+
+/* ═══ 孩童模式 ═══ */
+body.a11y-child .crab { padding: 24px; }
+body.a11y-child .crab .em { font-size: 66px; }
+body.a11y-child .crab.rare .em { font-size: 64px; }
+body.a11y-child .crab.golden .em { font-size: 80px; }
+body.a11y-child .btn-buy, body.a11y-child .btn-sell { height: 64px; font-size: 18px; border-radius: 16px; }
+body.a11y-child .catch-btn { height: 62px; font-size: 16px; border-radius: 16px; }
+body.a11y-child .qty-btn { padding: 14px 0; font-size: 14px; border-radius: 10px; }
+body.a11y-child .pred-btn { padding: 14px 0; font-size: 14px; }
+body.a11y-child .quick-btn { padding: 12px 0; font-size: 13px; }
+body.a11y-child .price-num { font-size: 42px; }
+body.a11y-child .abox-val { font-size: 24px; }
+body.a11y-child .icon-btn { width: 42px; height: 42px; }
+body.a11y-child .g-exit { width: 44px; height: 44px; font-size: 18px; }
+body.a11y-child .g-timer { font-size: 48px; }
+body.a11y-child .gs-n { font-size: 24px; }
+body.a11y-child .log-item { padding: 12px 0; min-height: 48px; }
+body.a11y-child .a11y-toggle { width: 58px; height: 34px; }
+body.a11y-child .a11y-toggle::after { width: 28px; height: 28px; }
+body.a11y-child .a11y-toggle.on::after { transform: translateX(24px); }
+body.a11y-child .h-x { width: 44px; height: 44px; }
+body.a11y-child .modal-ico { font-size: 56px; }
+body.a11y-child .modal-ttl { font-size: 20px; }
+body.a11y-child .modal-body { font-size: 15px; }
+body.a11y-child .m-cancel, body.a11y-child .m-ok { padding: 16px; font-size: 16px; }
+body.a11y-child .br-close-btn { padding: 18px; font-size: 16px; }
+body.a11y-child .trade-tip { font-size: 13px; }
+body.a11y-child .ev-text { font-size: 14px; line-height: 1.85; }
+body.a11y-child .pnl-total { display: none; }
+
+/* 孩童引导 */
+.child-guide{display:none;background:linear-gradient(135deg,rgba(91,164,217,.1),rgba(94,196,160,.06));
+  border:1px solid rgba(91,164,217,.2);border-radius:var(--r);padding:16px;margin-bottom:10px;
+  text-align:center;line-height:1.8}
+body.a11y-child .child-guide{display:block;animation:cardUp .58s var(--sp) .1s both}
+.child-guide-title{font-size:16px;font-weight:900;color:var(--ac);margin-bottom:8px}
+.child-guide-steps{font-size:13px;color:var(--ink)}
+.child-guide-steps b{color:var(--ac)}
+.child-guide-dismiss{margin-top:10px;font-size:10px;color:var(--t3);cursor:pointer}
+
+/* 年龄选择 */
+
+/* 单手模式：关键按钮移到左侧 */
+body.a11y-onehand .h-hdr { flex-direction: row-reverse; }
+body.a11y-onehand .topbar .tb-r { order: -1; }
+
+body.a11y-onehand .g-hdr .g-exit { order: -1; }
+body.a11y-onehand #herm-btn { right: auto; left: 20px; }
+body.a11y-onehand #herm-bubble { right: auto; left: 16px; border-radius: 16px 16px 16px 4px; transform-origin: bottom left; }
+body.a11y-onehand #herm-bubble::before { right: auto; left: 20px; }
+body.a11y-onehand #herm-bubble::after { right: auto; left: 21px; }
+body.a11y-onehand .br-close-wrap { padding-left: 24px; padding-right: 24px; }
+
+body.a11y-child #el-tpnl { display: none; }
+/* mood孩童模式在JS里处理 */
+
+/* 快捷菜单 */
+#quick-menu{position:fixed;inset:0;z-index:9200}
+.qm-scrim{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.qm-panel{position:absolute;top:max(env(safe-area-inset-top,44px),44px);right:12px;margin-top:48px;
+  background:var(--s1);border:1px solid var(--ln);border-radius:var(--r);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;min-width:160px;
+  animation:qmIn .2s var(--eo)}
+@keyframes qmIn{from{opacity:0;transform:translateX(12px) translateY(-8px)}to{opacity:1;transform:none}}
+.qm-item{display:flex;align-items:center;gap:10px;width:100%;padding:14px 18px;border:none;
+  background:transparent;color:var(--ink);font-size:14px;font-weight:500;
+  font-family:inherit;cursor:pointer;text-align:left;
+  border-bottom:1px solid var(--ln);transition:background .15s}
+.qm-item:last-child{border-bottom:none}
+.qm-item:active{background:var(--s2)}
+/* 单手模式菜单到左边 */
+body.a11y-onehand .qm-panel{right:auto;left:12px}
+
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:99999;
+  opacity:.008;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat:repeat;background-size:128px;
+}
+
+/* 币种按钮 */
+.cur-btn{
+  display:flex;align-items:center;gap:5px;cursor:pointer;
+  background:var(--s2);border:1px solid var(--ln);
+  border-radius:100px;padding:5px 10px 5px 8px;
+  font-family:inherit;color:var(--ink);transition:all .2s var(--eo);
+}
+.cur-btn:active{transform:scale(.96);background:var(--s3)}
+.cur-code{font-size:11px;font-weight:700;letter-spacing:.5px}
+.cur-arr{font-size:8px;color:var(--t3);transition:transform .2s}
+
+/* 币种弹窗 */
+#cur-picker{position:fixed;inset:0;z-index:9300;display:flex;align-items:flex-end;justify-content:center}
+.cp-scrim{position:absolute;inset:0;background:rgba(0,0,0,.5);animation:cpFade .2s ease both}
+@keyframes cpFade{from{opacity:0}to{opacity:1}}
+.cp-sheet{position:relative;width:100%;max-width:430px;background:var(--s1);
+  border-radius:var(--r3) var(--r3) 0 0;border:1px solid rgba(91,164,217,.08);border-bottom:none;
+  padding:20px 16px max(env(safe-area-inset-bottom,20px),20px);
+  transform:translateY(100%);animation:cpUp .35s var(--eo) both;
+  box-shadow:0 -8px 40px rgba(0,0,0,.4)}
+@keyframes cpUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.cp-title{font-size:14px;font-weight:700;color:var(--ink);text-align:center;margin-bottom:16px;letter-spacing:.3px}
+.cp-list{display:flex;flex-direction:column;gap:2px}
+.cp-opt{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border:none;
+  background:transparent;border-radius:12px;color:var(--ink);font-size:14px;font-family:inherit;
+  cursor:pointer;transition:background .15s var(--eo);text-align:left}
+.cp-opt:active{background:var(--s2)}
+.cp-opt.on{background:rgba(91,164,217,.08)}
+.cp-flag{font-size:22px;flex-shrink:0}
+.cp-name{flex:1;font-weight:500}
+.cp-sym{font-size:12px;color:var(--t2);font-weight:600;letter-spacing:.5px}
+.cp-check{font-size:14px;color:var(--ac);opacity:0;transition:opacity .15s}
+.cp-opt.on .cp-check{opacity:1}
+body.a11y-child .cp-opt{padding:18px 16px;font-size:16px}
+body.a11y-child .cp-flag{font-size:26px}
+body.a11y-onehand .cp-sheet{border-radius:var(--r3) var(--r3) 0 0}
+
+/* ═══ 捞蟹主推区 ═══ */
+
+/* 孩童模式 */
+/* ═══ 捞蟹按钮（嵌入价格卡片） ═══ */
+.catch-embed{margin-top:16px;padding-top:16px;border-top:1px solid rgba(91,164,217,.12)}
+.catch-btn-new{
+  width:100%;display:flex;align-items:center;gap:14px;
+  padding:16px 18px;border:1px solid rgba(91,164,217,.18);
+  border-radius:var(--r);cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,#18304A,#142842);
+  background-size:200% 200%;animation:catchBg 4s ease-in-out infinite;
+  transition:all .2s var(--eo);position:relative;overflow:hidden;
+}
+.catch-btn-new::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 40% 60% at 90% 50%,rgba(91,164,217,.08),transparent 60%);
+  pointer-events:none;
+}
+.catch-btn-new:active{transform:scale(.98);border-color:rgba(91,164,217,.3)}
+.cbn-icon{font-size:32px;flex-shrink:0;animation:crabFloat 2.5s ease-in-out infinite}
+.cbn-text{flex:1;min-width:0}
+.cbn-title{display:block;font-size:14px;font-weight:700;color:#fff;letter-spacing:.3px}
+.cbn-sub{display:block;font-size:12px;color:var(--t2);margin-top:3px;letter-spacing:.2px}
+.cbn-go{font-size:14px;font-weight:700;color:var(--ac);flex-shrink:0;letter-spacing:.8px}
+.catch-record{font-size:10px;color:var(--t3);text-align:center;margin-top:8px}
+/* 孩童模式 */
+body.a11y-child .catch-btn-new{padding:20px;border-color:rgba(91,164,217,.25)}
+body.a11y-child .cbn-icon{font-size:40px}
+body.a11y-child .cbn-title{font-size:18px}
+body.a11y-child .cbn-sub{font-size:13px}
+body.a11y-child .cbn-go{font-size:15px}
+
+.ach-item.new-unlock{animation:achUnlock .5s cubic-bezier(.34,1.8,.64,1)}
+@keyframes achUnlock{0%{transform:scale(.7);box-shadow:0 0 0 0 rgba(91,164,217,.3)}50%{transform:scale(1.1);box-shadow:0 0 20px 4px rgba(91,164,217,.2)}100%{transform:scale(1);box-shadow:none}}
+
+.daily-item.done .daily-check{animation:dailyDone .4s cubic-bezier(.34,1.8,.64,1)}
+@keyframes dailyDone{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+.chip.flash{animation:chipFlash .3s ease}
+@keyframes chipFlash{0%{opacity:.5;transform:scale(.9)}100%{opacity:1;transform:scale(1)}}
+
+.btn-buy.pulse{animation:buyPulse .3s ease}
+@keyframes buyPulse{0%{box-shadow:0 0 0 0 rgba(94,196,160,.3)}100%{box-shadow:0 0 0 12px rgba(94,196,160,0)}}
+.btn-sell.pulse{animation:sellPulse .3s ease}
+@keyframes sellPulse{0%{box-shadow:0 0 0 0 rgba(196,123,123,.3)}100%{box-shadow:0 0 0 12px rgba(196,123,123,0)}}
+
+/* 孩童模式 */
+body.a11y-child .sp-age-btn{padding:18px;font-size:17px}
+
+/* 全局蓝幕转场 */
+.g-curtain{position:fixed;inset:0;z-index:99998;pointer-events:none;
+  background:linear-gradient(135deg,#1B3D6E,#2855A0,#1C4580);
+  transform:translateX(-110%);will-change:transform}
+.g-curtain.sweep{animation:gSweep .5s cubic-bezier(.2,0,0,1) forwards}
+@keyframes gSweep{0%{transform:translateX(-110%)}25%{transform:translateX(0)}45%{transform:translateX(0)}100%{transform:translateX(110%)}}
+
+@keyframes catchBg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* P3R战斗切入倒计时 */
+.g-countdown{
+  position:absolute;inset:0;z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;overflow:hidden;
+}
+/* 数字 */
+.g-cd-num{
+  font-size:min(160px,40vw);font-weight:900;
+  color:#fff;font-style:italic;letter-spacing:-4px;
+  text-shadow:
+    0 0 40px rgba(91,164,217,.7),
+    0 0 80px rgba(91,164,217,.3),
+    5px 2px 0 rgba(40,85,160,.6),
+    -3px -1px 0 rgba(196,123,123,.2);
+  -webkit-text-stroke:1px rgba(255,255,255,.3);
+  position:relative;
+  opacity:0;
+}
+.g-cd-num.go{
+  font-size:min(100px,28vw);letter-spacing:12px;
+  color:#8ED4FF;font-style:italic;
+  text-shadow:
+    0 0 50px rgba(142,212,255,.8),
+    0 0 100px rgba(91,164,217,.4),
+    4px 2px 0 rgba(40,85,160,.5);
+  -webkit-text-stroke:1px rgba(142,212,255,.4);
+}
+/* 从右侧弹入——先快后急停 */
+.g-cd-num.in{animation:cdIn .2s cubic-bezier(0,0,.2,1) forwards}
+@keyframes cdIn{
+  from{opacity:0;transform:translateX(100vw) skewX(-20deg) scale(1.2)}
+  to{opacity:1;transform:translateX(0) skewX(-10deg) scale(1)}
+}
+/* 停住时的冲击波 */
+.g-cd-num.hold{opacity:1;transform:translateX(0) skewX(-10deg) scale(1)}
+.g-cd-num.hold::after{
+  content:'';position:absolute;inset:-40px;border-radius:50%;
+  border:2px solid rgba(91,164,217,.15);
+  animation:cdShock .4s ease-out forwards;
+}
+@keyframes cdShock{from{transform:scale(.3);opacity:1}to{transform:scale(2.5);opacity:0}}
+/* 向左扫出 */
+.g-cd-num.out{animation:cdOut .15s cubic-bezier(.5,0,1,.3) forwards}
+@keyframes cdOut{
+  from{opacity:1;transform:translateX(0) skewX(-10deg)}
+  to{opacity:0;transform:translateX(-100vw) skewX(-5deg)}
+}
+/* 背景闪白——瞬间高对比 */
+.g-cd-flash{
+  position:absolute;inset:0;
+  background:radial-gradient(circle at center,rgba(142,212,255,.12),rgba(91,164,217,.04) 50%,transparent 70%);
+  animation:cdFlash .2s ease-out forwards;
+}
+@keyframes cdFlash{from{opacity:1;transform:scale(.8)}to{opacity:0;transform:scale(1.5)}}
+/* GO!的额外横线装饰 */
+.g-cd-num.go::before{
+  content:'';position:absolute;top:50%;left:-20%;right:-20%;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(142,212,255,.3),transparent);
+  animation:cdLine .3s ease .1s both;
+}
+@keyframes cdLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+</style>
+</head>
+<body>
+
+<!-- ══ SPLASH ══ -->
+<div class="g-curtain" id="g-curtain"></div>
+<div id="splash">
+  <div class="sp-ripple"></div><div class="sp-ripple sp-r2"></div><div class="sp-ripple sp-r3"></div>
+  <div class="sp-glow"></div>
+  <div class="sp-ct" id="sp-ct">
+    <div class="sp-studio">Yomi Studio</div>
+    <div class="sp-clip"><div class="sp-title">Opencarb<em>+</em></div></div>
+    <div class="sp-sub">Reload</div>
+  </div>
+  <div class="sp-welcome" id="sp-welcome">
+    <div class="sp-wt">WELCOME TO<br><span class="sp-wt-name">Opencarb<em>+</em><br><span class="sp-wt-reload">Reload</span></span></div>
+    <div class="sp-ages">
+      <button class="sp-age-btn" onclick="splashPick('child')">🧒 我是小朋友</button>
+      <button class="sp-age-btn" onclick="splashPick('adult')">☕ 我是大人</button>
+    </div>
+  </div>
+  <div class="sp-curtain" id="sp-curtain"></div>
+  <div class="sp-scanline"></div>
+</div></div>
+
+<!-- ══ APP ══ -->
+<div id="app"><div class="shell">
+
+  <div class="topbar">
+    <div class="tb-l">
+      <div class="tb-logo">
+        <svg viewBox="0 0 70 58" fill="none">
+          <path d="M5 3C5 1 8 0 12 0H52C56 0 58 2 57 7L50 21C49 24 47 25 43 25H3C0 25-1 23 1 18Z" fill="white"/>
+          <path d="M17 33C17 31 20 30 24 30H64C68 30 70 32 69 37L62 51C61 54 59 58 55 58H15C12 58 10 56 11 51Z" fill="white" opacity=".55"/>
+        </svg>
+      </div>
+      <div class="tb-name">Opencarb<em>+</em><br>Reload</div>
+    </div>
+    <div class="tb-r">
+      <button class="cur-btn" id="cur-btn" onclick="toggleCurPicker()" aria-label="切换币种">
+        <span class="cur-flag" id="cur-flag">🇨🇳</span>
+        <span class="cur-code" id="cur-code">CNY</span>
+        <span class="cur-arr">▾</span>
+      </button>
+      <!-- 隐藏的select保持兼容性 -->
+      <select id="currency" style="display:none">
+        <option value="CNY">CNY</option><option value="USD">USD</option>
+        <option value="TWD">TWD</option><option value="HKD">HKD</option>
+        <option value="EUR">EUR</option>
+      </select>
+      <button class="icon-btn" id="menu-btn" onclick="toggleMenu()" aria-label="菜单">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="5" r="1.5" fill="var(--t2)" stroke="none"/>
+          <circle cx="12" cy="12" r="1.5" fill="var(--t2)" stroke="none"/>
+          <circle cx="12" cy="19" r="1.5" fill="var(--t2)" stroke="none"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="scroll">
+    <div class="hint-wrap" id="hint-wrap">
+      <div class="hint-card">
+        <div class="h-hdr"><span class="h-ttl">操作指南</span><button class="h-x" onclick="dismissHint()">✕</button></div>
+        <div class="h-steps">
+          <div class="h-step"><div class="h-num">🦀</div><div class="h-text"><b>抓螃蟹</b>：点下方按钮进入捞蟹，点击屏幕上的螃蟹收集它们</div></div>
+          <div class="h-step"><div class="h-num">💰</div><div class="h-text"><b>低买高卖</b>：价格低于 ¥40 时买入，高于 ¥40 时卖出，差价是利润</div></div>
+          <div class="h-step"><div class="h-num">🔮</div><div class="h-text"><b>预测涨跌</b>：猜对下一波方向，额外奖励 3 只螃蟹</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="child-guide" id="child-guide">
+      <div class="child-guide-title">🦀 怎么玩？</div>
+      <div class="child-guide-steps">
+        <b>第一步</b>：点下面的「去抓螃蟹」抓几只<br>
+        <b>第二步</b>：看上面的价格，等数字变大了<br>
+        <b>第三步</b>：点「卖出」把螃蟹卖掉赚钱！<br>
+        <b>第四步</b>：用赚的钱在价格低的时候再买螃蟹
+      </div>
+      <div class="child-guide-dismiss" onclick="this.parentElement.style.display='none'">我知道了，关掉这个</div>
+    </div>
+
+    <div class="card price-card d1">
+      <div class="sh"><span>实时行情</span><div class="ping"></div></div>
+      <div class="price-row" style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px">
+        <div class="price-num" id="el-price" role="status" aria-label="当前螃蟹价格" aria-live="polite">--</div>
+        <span class="chip flat" id="el-pct" aria-label="价格涨跌幅">0.00%</span>
+      </div>
+      <canvas id="chart" height="88" role="img" aria-label="螃蟹价格走势图，近60次记录"></canvas>
+      <div class="chart-ft"><span id="el-low">--</span><span>近60次</span><span id="el-high">--</span></div>
+      <div class="mood-row">
+        <span class="mood-lbl">市场情绪</span>
+        <div class="mood-track"><div class="mood-fill" id="el-mood" style="width:50%"></div></div>
+        <span class="mood-val" id="el-mood-val">中性</span>
+      </div>
+      <div class="ev-wrap" id="ev-wrap">
+        <div class="ev-row">
+          <div class="ev-icon" id="ev-icon">📈</div>
+          <div>
+            <div class="ev-name" id="ev-name">MARKET EVENT</div>
+            <div class="ev-text" id="ev-text"></div>
+          </div>
+        </div>
+      </div>
+      <div class="catch-embed">
+        <button class="catch-btn-new" onclick="Game.start()" aria-label="出海捞蟹">
+          <span class="cbn-icon">🦀</span>
+          <span class="cbn-text">
+            <span class="cbn-title">出海捞蟹</span>
+            <span class="cbn-sub">⭐ +3 · 👑 +10</span>
+          </span>
+          <span class="cbn-go">开始 →</span>
+        </button>
+        <div class="catch-record" id="hero-record"></div>
+      </div>
+    </div>
+
+    <div class="card asset-card d2">
+      <div class="sh"><span>我的资产</span></div>
+      <div style="text-align:center;padding:4px 0 12px;border-bottom:1px solid var(--ln);margin-bottom:10px">
+        <div style="font-size:11px;color:var(--t2);letter-spacing:2px;margin-bottom:6px">总资产</div>
+        <div id="el-total" style="font-size:32px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--ink);font-variant-numeric:tabular-nums;transition:color .3s">--</div>
+      </div>
+      <div class="abox-grid">
+        <div class="abox"><div class="abox-lbl">可用资金</div><div class="abox-val" id="el-bal" aria-label="可用资金" aria-live="polite">--</div><div class="abox-sub">&nbsp;</div></div>
+        <div class="abox"><div class="abox-lbl">螃蟹库存</div><div class="abox-val" id="el-hold" aria-label="螃蟹库存数量" aria-live="polite">0</div><div class="abox-sub" id="el-cost">均价 --</div></div>
+      </div>
+      <div class="pnl-row"><span class="pnl-lbl">持仓盈亏</span><span class="pnl-val" id="el-pnl" style="color:var(--t3)">--</span></div>
+      <div class="pnl-row pnl-total" style="margin-top:4px"><span class="pnl-lbl">累计盈亏</span><span class="pnl-val" id="el-tpnl" style="color:var(--t3)">--</span></div>
+      <div class="streak-row">
+        <span style="font-size:17px">🔥</span>
+        <span class="streak-lbl">连续交易天数</span>
+        <span class="streak-n" id="el-streak">0</span>
+      </div>
+    </div>
+
+    <div class="badge" id="el-badge">
+      <span class="badge-icon" id="el-badge-icon"></span>
+      <div><div class="badge-title" id="el-badge-title"></div><div class="badge-sub" id="el-badge-sub"></div></div>
+    </div>
+
+    <div class="card trade-card d3">
+      <div class="trade-tip" id="el-trade-tip">低价买，高价卖——市场的涨跌是机会，不是焦虑</div>
+      <div class="qty-lbl">交易数量</div>
+      <div class="qty-row">
+        <button class="qty-btn on" onclick="setLot(this,1)">1只</button>
+        <button class="qty-btn" onclick="setLot(this,5)">5只</button>
+        <button class="qty-btn" onclick="setLot(this,10)">10只</button>
+        <button class="qty-btn" onclick="setLot(this,50)">50只</button>
+      </div>
+      <div class="trade-btns">
+        <button class="btn-buy" id="btn-buy" onclick="tradeWithConfirm('buy')" aria-label="买入螃蟹"><span>买入 ↗</span><span class="btn-sub" id="el-buy-sub"></span><span class="rpl" id="rl-buy"></span></button>
+        <button class="btn-sell" id="btn-sell" onclick="tradeWithConfirm('sell')" aria-label="卖出螃蟹"><span>卖出 ↘</span><span class="btn-sub" id="el-sell-sub"></span><span class="rpl" id="rl-sell"></span></button>
+      </div>
+      <div class="quick-row">
+        <button class="quick-btn buy"  onclick="quickTrade('buy')"><span>↑ 全部买入</span></button>
+        <button class="quick-btn sell" onclick="quickTrade('sell')"><span>↓ 全部卖出</span></button>
+      </div>
+      <div class="pred-sect">
+        <div class="pred-lbl">下一波行情预测（猜对 +3只）</div>
+        <div class="pred-row">
+          <button class="pred-btn up"   id="pred-up" onclick="predict('up')"><span>📈 看涨</span></button>
+          <button class="pred-btn down" id="pred-dn" onclick="predict('dn')"><span>📉 看跌</span></button>
+        </div>
+        <div class="pred-hint" id="pred-hint"></div>
+      </div>
+    </div>
+
+    <!-- 成就 -->
+    <div class="achieve-wrap card d4" id="achieve-wrap">
+      <div class="sh"><span>成就</span></div>
+      <div class="achieve-grid" id="achieve-grid"></div>
+    </div>
+
+    <!-- 每日挑战 -->
+    <div class="card daily-card d4" id="daily-card">
+      <div class="daily-header">
+        <div class="sh" style="margin:0"><span>每日挑战</span></div>
+        <span class="daily-badge" id="daily-badge">今日</span>
+      </div>
+      <div class="daily-list" id="daily-list"></div>
+      <div class="daily-reset" id="daily-reset"></div>
+    </div>
+
+    <div class="card log-card d5">
+      <div class="sh" style="margin-bottom:10px;"><span>成交记录</span><span style="margin-left:auto;font-size:10px;color:var(--t3)" id="el-logcount"></span></div>
+      <div id="el-log"><div class="log-empty">还没有交易记录</div></div>
+    </div>
+
+  </div>
+</div></div>
+
+<div id="quick-menu" style="display:none">
+  <div class="qm-scrim" onclick="toggleMenu()"></div>
+  <div class="qm-panel">
+    <button class="qm-item" onclick="showHint();toggleMenu()" role="menuitem">📖 操作指南</button>
+    <button class="qm-item" onclick="openA11y();toggleMenu()" role="menuitem">♿ 无障碍</button>
+    <button class="qm-item" onclick="openAbout();toggleMenu()" role="menuitem">ℹ️ 关于</button>
+  </div>
+</div>
+
+<div id="cur-picker" style="display:none">
+  <div class="cp-scrim" onclick="toggleCurPicker()"></div>
+  <div class="cp-sheet">
+    <div class="cp-title">选择币种</div>
+    <div class="cp-list">
+      <button class="cp-opt on" data-cur="CNY" onclick="selectCur('CNY')"><span class="cp-flag">🇨🇳</span><span class="cp-name">人民币</span><span class="cp-sym">¥ CNY</span><span class="cp-check">✓</span></button>
+      <button class="cp-opt" data-cur="USD" onclick="selectCur('USD')"><span class="cp-flag">🇺🇸</span><span class="cp-name">美元</span><span class="cp-sym">$ USD</span><span class="cp-check">✓</span></button>
+      <button class="cp-opt" data-cur="TWD" onclick="selectCur('TWD')"><span class="cp-flag">🇹🇼</span><span class="cp-name">新台币</span><span class="cp-sym">NT$ TWD</span><span class="cp-check">✓</span></button>
+      <button class="cp-opt" data-cur="HKD" onclick="selectCur('HKD')"><span class="cp-flag">🇭🇰</span><span class="cp-name">港币</span><span class="cp-sym">HK$ HKD</span><span class="cp-check">✓</span></button>
+      <button class="cp-opt" data-cur="EUR" onclick="selectCur('EUR')"><span class="cp-flag">🇪🇺</span><span class="cp-name">欧元</span><span class="cp-sym">€ EUR</span><span class="cp-check">✓</span></button>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<div id="circuit">
+  <div class="cb-ico">🚨</div>
+  <div class="cb-ttl">市场熔断</div>
+  <div class="cb-body">价格剧烈波动<br>交易暂停，请稍候</div>
+  <div class="cb-cd" id="el-cd">5</div>
+</div>
+
+<div id="game-layer">
+  <div class="g-hdr">
+    <div style="flex:1">
+      <div class="g-title">出海捞蟹</div>
+      <div class="g-sub" id="el-gsub">螃蟹就在眼前，别手软</div>
+    </div>
+    <div class="g-timer" id="el-timer" aria-label="剩余时间" aria-live="assertive">20</div>
+    <button class="g-exit" onclick="Game.exit()" aria-label="停止捞蟹回到主页">✕</button>
+  </div>
+  <div class="g-prog"><div class="g-bar" id="el-prog" style="width:100%"></div></div>
+  <div class="g-stats">
+    <div class="gs"><div class="gs-n" id="el-cnt">0</div><div class="gs-l">已捞</div></div>
+    <div class="gs"><div class="gs-n" id="el-combo">×1</div><div class="gs-l">连击</div></div>
+    <div class="gs"><div class="gs-n" id="el-best">0</div><div class="gs-l">最高纪录</div></div>
+    <div class="gs"><div class="gs-n" id="el-inv">0</div><div class="gs-l">当前库存</div></div>
+  </div>
+  <div id="play-area"><div class="gold-flash" id="gold-flash"></div></div>
+<div class="g-countdown" id="g-countdown"></div>
+</div>
+
+<!-- BATTLE RESULT  fixed z:6100  NOT inside play-area -->
+<div id="battle-result">
+  <div class="br-banner"><div class="br-ep">今日出海 · HAUL REPORT</div><div class="br-h1" id="br-title">满载而归</div></div>
+  <div class="br-emoji" id="br-emoji">🎉</div>
+  <div class="br-stats" id="br-stats"></div>
+  <div class="br-bar-wrap">
+    <div class="br-bar-top"><span class="br-bar-lbl">捕捞效率</span><span class="br-bar-pct" id="br-pct">0%</span></div>
+    <div class="br-bar-track"><div class="br-bar-fill" id="br-fill"></div></div>
+  </div>
+  <div class="br-vw"><div class="br-verdict" id="br-verdict">COMPLETE</div></div>
+  <div class="br-close-wrap"><button class="br-close-btn" id="br-close" onclick="Game.close()">今天辛苦了，带着收获回港 🦀</button></div>
+</div>
+
+<div id="about-wrap" role="dialog" aria-label="关于 Opencarb+ Reload">
+  <div class="about-scrim" onclick="closeAbout()"></div>
+  <div class="about-panel">
+    <div class="about-scroll">
+      <div class="about-pill" role="presentation" aria-hidden="true"></div>
+
+      <!-- 头部 -->
+      <div class="about-head">
+        <div class="about-logo">
+          <svg viewBox="0 0 70 58" fill="none">
+            <path d="M5 3C5 1 8 0 12 0H52C56 0 58 2 57 7L50 21C49 24 47 25 43 25H3C0 25-1 23 1 18Z" fill="white"/>
+            <path d="M17 33C17 31 20 30 24 30H64C68 30 70 32 69 37L62 51C61 54 59 58 55 58H15C12 58 10 56 11 51Z" fill="white" opacity=".55"/>
+          </svg>
+        </div>
+        <div style="flex:1">
+          <div class="about-app">Opencarb<em>+</em> <span style="font-weight:400;font-size:14px;letter-spacing:3px;color:var(--t2)">Reload</span></div>
+          <div class="about-ver">v15.0 · Yomi Studio · 仅供娱乐</div>
+        </div>
+        <button class="icon-btn" onclick="closeAbout()" style="flex-shrink:0">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 制作人 -->
+      <div class="maker-list">
+        <div class="maker-row"><div class="maker-av" style="background:linear-gradient(145deg,#1a2a3a,#0f1e30)">🍊</div><div class="maker-name">米柚</div></div>
+        <div class="maker-row"><div class="maker-av" style="background:linear-gradient(145deg,#2a1a1a,#1e0f0f);font-size:22px">🦊</div><div class="maker-name">c酱喵喵喵</div></div>
+        <div class="maker-row"><div class="maker-av" style="background:linear-gradient(145deg,#1a2a1a,#0f1e0f)">🐑</div><div class="maker-name">sheep羊</div></div>
+        <div class="maker-row"><div class="maker-av" style="background:linear-gradient(145deg,#1f1a2a,#150f1e)">⭐</div><div class="maker-name">星若</div></div>
+      </div>
+
+      <!-- YOMI STUDIO 宣言 -->
+      <div class="yomi-manifesto">
+        <div class="ym-line ym-welcome">Yomi Studio 欢迎任何人的加入。</div>
+        <div class="ym-line">在这里，我们不只是同事，更像是一个大家庭。</div>
+        <div class="ym-line ym-accent">我们认同完整而立体的你。</div>
+      </div>
+
+      <div class="quote-section"><div class="quote-card" id="quote-card" onclick="rotateQuote()"><div class="quote-text" id="quote-text">「价格是你付出的，价值是你得到的。」</div><div class="quote-author" id="quote-author">── 本杰明·格雷厄姆</div><div class="quote-tap">轻触换一句</div></div></div>
+      <div class="dedication" style="margin-top:18px">
+        <p>献给每一个在涨跌里，依然认真对待自己的人。</p>
+        <p>我们做了这个小小的游戏，希望它陪你度过某些时刻。</p>
+      </div>
+
+      <!-- 页脚 -->
+      <div class="about-foot">Made by <strong>Yomi Studio</strong><br>数据纯属虚构 · 游戏仅供娱乐</div>
+      <div class="about-foot-note">♿ 为每一个人设计 · 市场有风险，捞蟹需谨慎 🦀</div>
+      <div style="margin-top:12px;padding:12px 14px;border-radius:10px;background:rgba(91,164,217,.04);border:1px solid rgba(91,164,217,.06);font-size:11px;color:var(--t2);line-height:1.8;text-align:center">如果你需要有人听你说话<br><strong style="color:var(--ac)">400-161-9995</strong></div>
+
+    </div><!-- /.about-scroll -->
+  </div>
+</div>
+
+<!-- HERM-01  助手 -->
+<button id="herm-btn" onclick="Herm.toggle()" aria-label="Herm-01 助手，点击获取帮助">
+  <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="16" cy="16" r="13" stroke="rgba(255,255,255,.82)" stroke-width="1.5"/>
+    <circle cx="16" cy="16" r="3.5" fill="rgba(255,255,255,.9)"/>
+    <line x1="16" y1="3" x2="16" y2="9" stroke="rgba(255,255,255,.82)" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <span id="herm-dot"></span>
+</button>
+
+<div id="herm-bubble">
+  <div class="herm-bubble-head">
+    <div class="herm-name">Herm-01</div>
+    <button class="herm-close-btn" onclick="Herm.hide()" aria-label="关闭">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="herm-msg" id="herm-msg" aria-live="polite" aria-label="Herm-01 消息">——</div>
+  <div class="herm-time" id="herm-time"></div>
+</div>
+
+<div id="a11y-panel" role="dialog" aria-label="辅助功能" aria-modal="true">
+  <div class="a11y-scrim" onclick="closeA11y()"></div>
+  <div class="a11y-sheet">
+    <div class="a11y-scroll">
+      <div class="a11y-pill" role="presentation" aria-hidden="true"></div>
+
+      <div class="a11y-head">
+        <div class="a11y-title">辅助功能</div>
+        <button class="icon-btn" onclick="closeA11y()" aria-label="关闭" style="flex-shrink:0">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--t2)" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="a11y-subtitle">这里的每一个开关，都是为了让你玩得更舒服。<br>没有对错，只有适不适合你。</div>
+
+      <!-- ──────────────── 视觉 ──────────────── -->
+      <div class="a11y-group">
+        <div class="a11y-group-label">视觉</div>
+        <div class="a11y-rows">
+
+          <div class="a11y-font-row">
+            <div class="a11y-row-icon" aria-hidden="true">文</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">字体大小</div>
+              <div class="a11y-row-desc">标准到特大四档，适合不同视力需求</div>
+            </div>
+            <div class="a11y-font-btns" role="radiogroup" aria-label="字体大小">
+              <button class="a11y-font-btn on" id="fs-sm" onclick="setFontSize('sm')" role="radio" aria-checked="true"  aria-label="标准字体" style="font-size:10px">A</button>
+              <button class="a11y-font-btn"    id="fs-md" onclick="setFontSize('md')" role="radio" aria-checked="false" aria-label="中等字体" style="font-size:12px">A</button>
+              <button class="a11y-font-btn"    id="fs-lg" onclick="setFontSize('lg')" role="radio" aria-checked="false" aria-label="大字体"   style="font-size:14px">A</button>
+              <button class="a11y-font-btn"    id="fs-xl" onclick="setFontSize('xl')" role="radio" aria-checked="false" aria-label="特大字体" style="font-size:16px">A</button>
+            </div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">◑</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">高对比度</div>
+              <div class="a11y-row-desc">加深颜色对比，界面元素更清晰可辨</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-hc" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('hc')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('hc')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">◐</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">色觉辅助</div>
+              <div class="a11y-row-desc">以蓝橙替代红绿区分涨跌，适合色觉差异的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-colorblind" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('colorblind')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('colorblind')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">☽</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">护眼柔化</div>
+              <div class="a11y-row-desc">偏暖色调，降低蓝光，适合长时间游玩或眼睛疲劳时</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-warm" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('warm')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('warm')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">≡</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">增大行间距</div>
+              <div class="a11y-row-desc">加宽文字行距，适合阅读障碍或需要更清晰排版的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-spacing" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('spacing')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('spacing')}"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ──────────────── 孩童模式 ──────────────── -->
+      <div class="a11y-group">
+        <div class="a11y-group-label">特殊模式</div>
+        <div class="a11y-rows">
+          <div class="a11y-row" style="background:linear-gradient(135deg,rgba(91,164,217,.06),rgba(91,164,217,.02));border:1px solid rgba(91,164,217,.1);border-radius:12px">
+            <div class="a11y-row-icon" aria-hidden="true" style="font-size:20px">🧸</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name" style="font-size:15px">孩童模式</div>
+              <div class="a11y-row-desc">打开后游戏会变得更简单、文字更好懂、螃蟹更容易抓到，适合小朋友或需要更轻松体验的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-child" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleChildWithSweep()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleChildWithSweep()}" "></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────────────── 动作与操控 ──────────────── -->
+      <div class="a11y-group">
+        <div class="a11y-group-label">动作与操控</div>
+        <div class="a11y-rows">
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">◎</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">减少动画</div>
+              <div class="a11y-row-desc">关闭大部分过渡效果，适合前庭障碍、容易眩晕或偏头痛的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-motion" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('motion')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('motion')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">✋</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">单手模式</div>
+              <div class="a11y-row-desc">放大操作按钮与点击区域，适合单手持机或上肢活动受限的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-onehand" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('onehand')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('onehand')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">⊕</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">加大触控区域</div>
+              <div class="a11y-row-desc">扩大所有可点击元素的触控范围，适合精细动作困难的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-touch" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('touch')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('touch')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">⊘</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">防误触确认</div>
+              <div class="a11y-row-desc">每次买卖前弹出二次确认，避免误操作</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-confirm" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('confirm')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('confirm')}"></div>
+          </div>
+
+          <div class="a11y-duration-row">
+            <div class="a11y-row-icon" aria-hidden="true">⏱</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">捞蟹时限</div>
+              <div class="a11y-row-desc">为反应速度不同的玩家提供更充裕的节奏</div>
+            </div>
+            <div class="a11y-dur-btns" role="radiogroup" aria-label="捞蟹时限">
+              <button class="a11y-dur-btn on" id="dur-20" onclick="setDuration(20)" role="radio" aria-checked="true"  aria-label="20秒">20s</button>
+              <button class="a11y-dur-btn"    id="dur-35" onclick="setDuration(35)" role="radio" aria-checked="false" aria-label="35秒">35s</button>
+              <button class="a11y-dur-btn"    id="dur-60" onclick="setDuration(60)" role="radio" aria-checked="false" aria-label="60秒">60s</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ──────────────── 听觉与触觉 ──────────────── -->
+      <div class="a11y-group">
+        <div class="a11y-group-label">听觉与触觉</div>
+        <div class="a11y-rows">
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">♪</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">操作音效</div>
+              <div class="a11y-row-desc">买入、卖出、捕捞时发出轻提示音，辅助视力受限玩家确认操作</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-sound" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('sound')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('sound')}"></div>
+          </div>
+
+          <div class="a11y-row">
+            <div class="a11y-row-icon" aria-hidden="true">⁓</div>
+            <div class="a11y-row-body">
+              <div class="a11y-row-name">震动反馈</div>
+              <div class="a11y-row-desc">操作时通过震动确认，适合听力受限或偏好触觉反馈的玩家</div>
+            </div>
+            <div class="a11y-toggle" id="a11y-haptic" role="switch" aria-checked="false" tabindex="0"
+              onclick="toggleA11y('haptic')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('haptic')}"></div>
+          </div>
+          <div class="a11y-row"><div class="a11y-row-icon" aria-hidden="true">🗣</div><div class="a11y-row-body"><div class="a11y-row-name">语音报价</div><div class="a11y-row-desc">价格变动时自动朗读当前价格</div></div><div class="a11y-toggle" id="a11y-priceread" role="switch" aria-checked="false" tabindex="0" onclick="toggleA11y('priceread')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('priceread')}"></div></div>
+          <div class="a11y-row"><div class="a11y-row-icon" aria-hidden="true">📢</div><div class="a11y-row-body"><div class="a11y-row-name">倒计时语音</div><div class="a11y-row-desc">捞蟹最后5秒语音播报秒数</div></div><div class="a11y-toggle" id="a11y-announce" role="switch" aria-checked="false" tabindex="0" onclick="toggleA11y('announce')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleA11y('announce')}"></div></div>
+        </div>
+      </div>
+
+      <!-- ──────────────── 关于这款游戏 ──────────────── -->
+      <div class="a11y-inclusion">
+        <div class="a11y-inclusion-title">Opencarb+ Reload 为每一个人设计</div>
+        <div class="a11y-inclusion-body">
+          <p>无论你今天带着什么来到这里——</p>
+          <p>Opencarb+ Reload 相信，每个人都值得一个<br>可以好好待着的地方。</p>
+          <p>上方的每一个设置，都是为你准备的。<br>没有对错，只有适合不适合。</p>
+        </div>
+        <div class="a11y-inclusion-close">
+          <strong>你来这里，就属于这里。</strong>
+        </div>
+      </div>
+
+      <div class="a11y-crisis">
+        <div class="a11y-crisis-icon">🫂</div>
+        <div class="a11y-crisis-body">
+          <div class="a11y-crisis-title">如果今天很难</div>
+          <div class="a11y-crisis-text">
+            全国心理援助热线：<strong>400-161-9995</strong><br>
+            北京心理危机干预：<strong>010-82951332</strong>
+          </div>
+          <div class="a11y-crisis-note">随时可以拨打，不需要理由。</div>
+        </div>
+      </div>
+
+      <div class="a11y-note">所有设置自动保存，重启后依然生效。<br>每一项都经过测试，真实可用。</div>
+    </div>
+  </div>
+</div>
+
+<div id="modal" role="dialog" aria-label="确认操作">
+  <div class="modal-scrim" onclick="closeModal()"></div>
+  <div class="modal-box">
+    <div class="modal-ico" id="m-ico">⚓</div>
+    <div class="modal-ttl"  id="m-ttl">确认</div>
+    <div class="modal-body" id="m-body">确认操作？</div>
+    <div class="modal-btns">
+      <button class="m-cancel" onclick="closeModal()">再想想</button>
+      <button class="m-ok" id="m-ok">确认</button>
+    </div>
+
+</div>
+
+<script>
+'use strict';
+/*
+  ══════════════════════════════════════════════════════
+  OPENCRAB+  v12  ·  ENGINE
+
+  设计原则：
+  ① 状态唯一  — S 是唯一真相来源，所有渲染来自 S
+  ② 定时器登记  — 所有 setTimeout 都有对应的清理路径
+  ③ 结算动画独立  — _rt[] 集中管理，随时可取消
+  ④ 竞争条件消除  — exit() 立即停 ticker，无法竞争
+  ⑤ 经济平衡  — GARCH 价格模型 + 强均值回归 + 持仓压力
+  ══════════════════════════════════════════════════════
+*/
+
+/* ── CONSTANTS ── */
+const RATES  = {CNY:1,USD:.138,TWD:4.42,HKD:1.08,EUR:.127};
+const FLAGS  = {CNY:'🇨🇳',USD:'🇺🇸',TWD:'🇹🇼',HKD:'🇭🇰',EUR:'🇪🇺'};
+const SYMS   = {CNY:'¥',USD:'$',TWD:'NT$',HKD:'HK$',EUR:'€'};
+
+const SKEY   = 'ocrab_m17';
+const TICK   = 1800;
+const AUTOSAVE = 8000;
+const FAIR  = 40;    /* 价格长期均衡中枢 */
+const P_MIN = 8;     /* 价格硬性下界 */
+const P_MAX = 120;   /* 价格硬性上界 */
+
+/* ── MARKET EVENTS ── 致敬金融史上的传奇人物与历史时刻 ──
+   每个事件都真实影响市场情绪，是玩法的一部分，
+   也是制作者对那些了不起的人的一声轻声致敬。      */
+const EVENTS = [
+  {
+    id:'buffett',icon:'🎩',name:'BUFFETT MOMENT',
+    text:'「别人恐惧时我贪婪，别人贪婪时我恐惧。」\n——沃伦·巴菲特，奥马哈先知',
+    delta:+24,ticks:4
+  },
+  {
+    id:'soros',icon:'🐻',name:'SOROS STRIKES',
+    text:'「市场是反射性的——价格影响基本面。」\n——乔治·索罗斯 正在做空',
+    delta:-28,ticks:4
+  },
+  {
+    id:'lynch',icon:'📖',name:'PETER LYNCH PICK',
+    text:'「投资你所了解的，十倍股往往来自身边。」\n——彼得·林奇 发现了一只「十倍蟹」',
+    delta:+20,ticks:3
+  },
+  {
+    id:'graham',icon:'📐',name:'GRAHAM\'S MARGIN',
+    text:'「安全边际是投资的中心概念。」\n——本杰明·格雷厄姆，价值投资的奠基者',
+    delta:+15,ticks:3
+  },
+  {
+    id:'munger',icon:'🧠',name:'MUNGER INVERTS',
+    text:'「反过来想，总是反过来想。」\n——查理·芒格 的反向信号出现了',
+    delta:-16,ticks:3
+  },
+  {
+    id:'templeton',icon:'🌍',name:'TEMPLETON MAXIM',
+    text:'「在最大悲观时买入，在最大乐观时卖出。」\n——约翰·邓普顿，逆向投资的先驱',
+    delta:+19,ticks:3
+  },
+  {
+    id:'blackmon',icon:'🖤',name:'BLACK MONDAY',
+    text:'1987年10月19日，道指单日跌22.6%。\n历史总是以新的面孔重演。',
+    delta:-38,ticks:5
+  },
+  {
+    id:'dotcom',icon:'💻',name:'DOT-COM BUBBLE',
+    text:'「螃蟹科技」概念股狂飙——\n但记住：泡沫总是在最美好的时候破裂。',
+    delta:+32,ticks:3
+  },
+  {
+    id:'fed',icon:'🏦',name:'FED PIVOT',
+    text:'美联储暗示降息路径，\n流动性宽松，风险资产全线拉升。',
+    delta:+22,ticks:4
+  },
+  {
+    id:'keynes',icon:'🎭',name:'KEYNES CASINO',
+    text:'「市场保持非理性的时间，\n可以长于你保持偿付能力的时间。」\n——约翰·梅纳德·凯恩斯',
+    delta:0,ticks:3
+  },
+  {
+    id:'fisher',icon:'🌱',name:'PHIL FISHER INSIGHT',
+    text:'「最好的时机是：好公司遇到暂时的困难。」\n——菲利普·费雪，成长股投资之父',
+    delta:+17,ticks:3
+  },
+  {
+    id:'tide',icon:'🌊',name:'RISING TIDE',
+    text:'「涨潮时，所有的船都会上升。」\n「退潮时，才知道谁在裸泳。」\n——两句相反的市场智慧',
+    delta:+10,ticks:3
+  },
+];
+
+let _evActive=null, _evTimer=null;
+
+function fireEvent() {
+  if (_evActive) return;
+  const ev = EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  _evActive = ev;
+  mood = Math.max(10,Math.min(90,mood+ev.delta));
+  const wrap=$('ev-wrap');
+  /* 强制重播动画：先移除 show，下一帧再加回来 */
+  wrap.classList.remove('show');
+  $('ev-icon').textContent = ev.icon;
+  $('ev-name').textContent = ev.name;
+  $('ev-text').innerHTML = ev.text.replace(/\n/g,'<br>');
+  requestAnimationFrame(()=>{ wrap.classList.add('show'); });
+  if(navigator.vibrate)try{navigator.vibrate([10,5,20]);}catch{}
+  vib([18,10,36]);
+  _evTimer=setTimeout(()=>{
+    wrap.classList.remove('show');
+    _evActive=null;
+    scheduleEvent();
+  }, ev.ticks*TICK*1.4);
+}
+
+function scheduleEvent() {
+  clearTimeout(_evTimer);
+  _evTimer=setTimeout(fireEvent,(8+Math.random()*12)*TICK);
+}
+
+/* ── UI COPY ── */
+const CP = {
+  subs:  ['螃蟹就在眼前，别手软','手要快，心要稳','专注，感受节奏','每一只都算数','稳住，别慌'],
+  combo: {2:'连击！节奏来了',3:'三连！状态绝佳 ✨',4:'四连！今日海王',5:'五连！传奇捕手 👑'},
+  warn:  ['最后几秒，别停手！','冲刺！把握每一秒','还没结束，继续！','不要放弃！'],
+  tips:  [
+    '低价买，高价卖——市场的涨跌是机会，不是焦虑',
+    '耐心是最难学的技能，也是回报最高的技能',
+    '格雷厄姆说：价格是你付出的，价值是你得到的',
+    '真正的风险，是不知道自己在做什么',
+    '市场先生每天都给你报价，你没有义务接受',
+  ],
+  title(n,rec) {
+    if(rec) return '打破历史纪录！';
+    return [[20,'今日大丰收'],[12,'满载而归'],[6,'今天收获不错'],[1,'辛苦了，慢慢积累'],[0,'下次会更好的']].find(([t])=>n>=t)[1];
+  },
+  toast(n) {
+    if(!n)   return '空手而归，下次加油 🦀';
+    if(n<5)  return `捞了 ${n} 只 🦀`;
+    if(n<12) return `捞了 ${n} 只，不错 🎉`;
+    return `捞了 ${n} 只，太强了 👑`;
+  },
+  milestone(total) {
+    if(total>=10000) return {icon:'👑',title:'华尔街之蟹',sub:'总资产破万，你是这片海的王',cls:'rich'};
+    if(total>=5000)  return {icon:'🏆',title:'深海操盘手',sub:'资产突破五千，稳健成熟',cls:'active'};
+    if(total>=2000)  return {icon:'⚓',title:'老练水手',sub:'资产过两千，方向感越来越准',cls:'active'};
+    if(total>=1000)  return {icon:'🌊',title:'初出茅庐',sub:'资产破千，第一个里程碑',cls:'active'};
+    return null;
+  },
+  broke: {icon:'🐶',title:'华尔街之🐶',sub:'兜里比脸干净，先去捞点螃蟹吧',cls:'broke'},
+};
+const pick = a=>a[a.length*Math.random()|0];
+
+/* ── STATE ── */
+const defS = ()=>({
+  balance:800,holdings:0,price:FAIR,avgCost:0,
+  streak:0,lastDay:'',bestCatch:0,totalCaught:0,totalBuys:0,
+  hintDismissed:false,
+  prediction:null,predPrice:0,predCorrect:0,predCooldownUntil:0,
+  lastMilestone:0,
+  hadFirstLoss:false,
+  seenWelcome:false,
+  ageGroup:null,
+  _childFirstHaul:false,
+  _streak3:false,
+  _streak7:false,
+  totalPnl:0,  // 历史累计盈亏
+  tradeCount:0, // 总交易笔数
+});
+
+function loadS() {
+  try {
+    const raw=localStorage.getItem(SKEY);
+    if(!raw) return defS();
+    const p=JSON.parse(raw);
+    const ok=['balance','holdings','price','avgCost']
+      .every(k=>typeof p[k]==='number'&&isFinite(p[k])&&p[k]>=0)&&p.price>0;
+    return ok?Object.assign(defS(),p):defS();
+  } catch { return defS(); }
+}
+
+const S=loadS();
+if(typeof S.tradeCount!=='number')S.tradeCount=0;
+if(typeof S.totalPnl!=='number')S.totalPnl=0;
+if(typeof S.totalCaught!=='number')S.totalCaught=0;
+if(typeof S.predCorrect!=='number')S.predCorrect=0;
+if(!S.achievements)S.achievements={};
+let _saveT=null;
+function save(flash) {
+  try{const d=JSON.stringify(S);localStorage.setItem(SKEY,d);localStorage.setItem(SKEY+'_bak',d);}catch{}
+  if(!flash) return;
+  // 存档提示用一个轻量级的topbar指示
+  const tb=document.querySelector('.topbar');
+  if(tb&&!tb.querySelector('.save-dot')){
+    const d=document.createElement('div');
+    d.className='save-dot';
+    d.style.cssText='position:absolute;bottom:4px;left:50%;width:4px;height:4px;border-radius:50%;background:var(--up);transform:translateX(-50%);opacity:0;transition:opacity .3s';
+    tb.appendChild(d);
+  }
+  const dot=tb&&tb.querySelector('.save-dot');
+  if(dot){dot.style.opacity='1';clearTimeout(_saveT);_saveT=setTimeout(()=>dot.style.opacity='0',1500);}
+}
+setInterval(()=>save(true),AUTOSAVE);
+window.addEventListener('visibilitychange',()=>{if(document.hidden)save(false);});
+
+function updateStreak() {
+  const today=new Date().toDateString();
+  if(S.lastDay===today) return;
+  S.streak=S.lastDay===new Date(Date.now()-86400000).toDateString()?(S.streak||0)+1:1;
+  S.lastDay=today;
+}
+updateStreak();
+// streak奖励
+if(S.streak>=7&&!S._streak7){S._streak7=true;S.balance+=50;save(false);setTimeout(()=>toast('🔥 连续7天！奖励 +¥50'),500);}
+if(S.streak>=3&&!S._streak3){S._streak3=true;S.balance+=20;save(false);setTimeout(()=>toast('🔥 连续3天！奖励 +¥20'),500);}
+
+/* ── PRICE MODEL (GARCH-lite) ──
+   强均值回归 + 持仓压力 + 情绪自然衰减
+   价格被约束在 [P_MIN, P_MAX]，长期向 FAIR 回归 */
+let lot=1,hist=[],logs=[],circuitOn=false;
+let vol=.026,mood=50;
+let anchor=Math.max(P_MIN,Math.min(P_MAX,S.price));
+
+function boxMuller() {
+  const u=Math.max(1e-10,Math.random());
+  return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*Math.random());
+}
+
+function nextP(p) {
+  const z=boxMuller(),shock=z*vol;
+  const pull=(anchor-p)*.012+(FAIR-p)*.003;
+  const press=-Math.min(S.holdings,800)*.0003;
+  const bias=(mood-50)*.00015;
+  const np=Math.max(P_MIN,Math.min(P_MAX,p*(1+shock+pull+press+bias)));
+  const vd=(np/FAIR)>1.5?.7:(np/FAIR)<.6?.8:1;
+  vol=Math.max(.012,Math.min(.14,Math.sqrt(.12*shock*shock+.82*vol*vol+.06*.022*.022)*vd));
+  anchor=anchor*.993+FAIR*.007;
+  mood=Math.max(10,Math.min(90,mood*.97+50*.03+(np>p?1.2:-1.2)+(Math.random()-.5)*2.5));
+  return np;
+}
+
+(function seed() {
+  let p=Math.max(P_MIN,Math.min(P_MAX,S.price));
+  for(let i=0;i<50;i++){p=nextP(p);hist.push(p);}
+  hist.push(p);S.price=p;
+})();
+
+/* ── DOM ── */
+const $=id=>document.getElementById(id);
+const cur=()=>$('currency').value;
+const sym=()=>SYMS[cur()];
+const rt =()=>RATES[cur()];
+const fmt=v =>{const a=Math.abs(v*rt());return (v<0?'-':'')+sym()+a.toFixed(a>=100?0:a>=10?1:2);};
+
+let _toastT=null;
+function toast(msg,dur=2600) {
+  const el=$('toast');el.textContent=msg;el.classList.add('on');
+  clearTimeout(_toastT);_toastT=setTimeout(()=>el.classList.remove('on'),dur);
+}
+function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch{}}
+function onCurChange(){$('cur-flag').textContent=FLAGS[cur()];render();}
+
+function addRipple(lid,e) {
+  const layer=$(lid);if(!layer) return;
+  const btn=layer.parentElement,rect=btn.getBoundingClientRect();
+  const x=(e.clientX??rect.left+rect.width/2)-rect.left;
+  const y=(e.clientY??rect.top+rect.height/2)-rect.top;
+  const s=Math.max(rect.width,rect.height);
+  const rp=document.createElement('span');rp.className='rp';
+  rp.style.cssText=`width:${s}px;height:${s}px;left:${x-s/2}px;top:${y-s/2}px;`;
+  layer.appendChild(rp);setTimeout(()=>rp.remove(),540);
+}
+
+function bumpEl(el){if(!el) return;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
+
+/* ── HINT ── */
+function dismissHint() {
+  const el=$('hint-wrap');if(!el) return;
+  el.style.transition='opacity .28s,transform .28s';
+  el.style.opacity='0';el.style.transform='translateY(-10px) scale(.97)';
+  setTimeout(()=>{el.style.display='none';},300);
+  S.hintDismissed=true;save(false);
+}
+function showHint(){
+  const el=$('hint-wrap');if(!el)return;
+  el.style.display='';el.style.opacity='1';el.style.transform='none';
+}
+
+/* ── PREDICTION ── */
+let _predT=null;
+function predict(dir) {
+  if(S.prediction){toast('⏳ 预测进行中');return;}
+  const now=Date.now();
+  if(now<(S.predCooldownUntil||0)){
+    const wait=Math.ceil(((S.predCooldownUntil||0)-now)/1000);
+    toast(`⏳ 预测冷却中，还需 ${wait}s`);return;
+  }
+  S.prediction=dir;S.predPrice=S.price;
+  _trackDaily('predict');
+  $('pred-up').classList.toggle('lit',dir==='up');
+  $('pred-dn').classList.toggle('lit',dir==='dn');
+  $('pred-hint').textContent='预测已提交，等待行情验证…';
+  $('pred-hint').style.color='var(--t3)';
+  clearTimeout(_predT);_predT=setTimeout(settlePred,TICK*3+600);
+  save(false);
+}
+
+function settlePred() {
+  if(!S.prediction) return;
+  const ok=(S.price>S.predPrice?'up':'dn')===S.prediction;
+  S.prediction=null;
+  $('pred-up').classList.remove('lit');$('pred-dn').classList.remove('lit');
+  S.predCooldownUntil=Date.now()+(ok?TICK*8:TICK*4);
+  if(ok){
+    S.holdings+=3;S.predCorrect=(S.predCorrect||0)+1;
+    _trackDaily('predwin');
+    $('pred-hint').textContent='🎉 看准了！3只螃蟹悄悄入库';
+    $('pred-hint').style.color='var(--ac)';
+    toast('🔮 预测正确，奖励 3 只螃蟹',3200);
+    vib([15,8,30,8,15]);render();save(true);
+  }else{
+    $('pred-hint').textContent='😌 没猜中，市场总有意外';
+    $('pred-hint').style.color='var(--dn)';
+  }
+  // 冷却倒计时显示
+  const _cdInterval=setInterval(()=>{
+    const remain=Math.ceil(((S.predCooldownUntil||0)-Date.now())/1000);
+    const el=$('pred-hint');
+    if(!el||remain<=0){clearInterval(_cdInterval);if(el){el.textContent='可以再次预测了';el.style.color='var(--ac)';setTimeout(()=>{if(el)el.textContent='';},2000);}return;}
+    el.textContent='冷却中 '+remain+'s';el.style.color='var(--t3)';
+  },1000);
+}
+
+/* ── RENDER ── */
+function render() {
+  const p=S.price,prev=hist.length>1?hist[hist.length-2]:p;
+  const chg=p-prev,pct=prev?(chg/prev)*100:0;
+  const sign=chg>=0?'+':'';
+  const dir=chg>.001?'up':chg<-.001?'dn':'flat';
+
+  const pe=$('el-price');const _oldP=pe.textContent;pe.textContent=fmt(p);
+  if(_oldP!==fmt(p)){pe.classList.remove('tick');void pe.offsetWidth;pe.classList.add('tick');}
+  pe.className='price-num'+(dir==='up'?' up':dir==='dn'?' dn':'');
+  const pc=$('el-pct');const _oldPct=pc.textContent;pc.textContent=sign+pct.toFixed(2)+'%';pc.className='chip '+dir;
+  if(_oldPct!==pc.textContent){pc.classList.add('flash');setTimeout(()=>pc.classList.remove('flash'),300);}
+
+  const be=$('el-bal'),nb=fmt(S.balance);
+  if(be.textContent!==nb){be.classList.remove('tick');void be.offsetWidth;be.classList.add('tick');}
+  be.textContent=nb;
+  $('el-hold').textContent=S.holdings+' 只';
+  $('el-cost').textContent=S.holdings>0?'均价 '+fmt(S.avgCost):'暂无持仓';
+
+  const pv=$('el-pnl');
+  if(S.holdings>0&&S.avgCost>0){
+    const pnl=(p-S.avgCost)*S.holdings;
+    pv.textContent=(pnl>=0?'+':'')+fmt(pnl);
+    pv.style.color=pnl>=0?'var(--ac)':'var(--dn)';
+  }else{pv.textContent='--';pv.style.color='var(--t3)';}
+
+  $('el-streak').textContent=S.streak||0;
+  const _hr=$('hero-record');if(_hr){const b=S.bestCatch||0;_hr.innerHTML=b?'<span>最高纪录 '+b+' 只</span>':'<span>还没有记录，去试试！</span>';}
+  const _total=S.balance+S.holdings*S.price;
+  const _tEl=$('el-total');if(_tEl){_tEl.textContent=fmt(_total);_tEl.style.color=_total>=800?'var(--ac)':'var(--dn)';}
+  const tpEl=$('el-tpnl');if(tpEl){const tp=S.totalPnl||0;tpEl.textContent=tp===0?'--':(tp>=0?'+':'')+fmt(tp);tpEl.style.color=tp>0?'var(--ac)':tp<0?'var(--dn)':'var(--t3)';}
+
+  const mf=$('el-mood'),mv=$('el-mood-val');
+  if(mf&&mv){
+    mf.style.width=mood+'%';
+    if(mood>65){mf.style.background='linear-gradient(90deg,#3A9A96,var(--ac))';mv.textContent=(typeof _isChild==='function'&&_isChild())?'看涨':'看涨 '+Math.round(mood);mv.dataset.mood='up';mv.style.color='var(--ac)';}
+    else if(mood<35){mf.style.background='var(--dn)';mv.textContent=(typeof _isChild==='function'&&_isChild())?'看跌':'看跌 '+Math.round(mood);mv.dataset.mood='dn';mv.style.color='var(--dn)';}
+    else{mf.style.background='#5BA4D9';mv.textContent=(typeof _isChild==='function'&&_isChild())?'中性':'中性 '+Math.round(mood);mv.style.color='var(--t3)';}
+  }
+
+  /* 里程碑称号系统 */
+  const badge=$('el-badge');
+  const total=S.balance+S.holdings*S.price;
+  if(S.balance<5&&S.holdings===0){
+    $('el-badge-icon').textContent=CP.broke.icon;
+    $('el-badge-title').textContent=CP.broke.title;
+    $('el-badge-sub').textContent=CP.broke.sub;
+    badge.className='badge '+CP.broke.cls;
+  }else{
+    const m=CP.milestone(total);
+    if(m){
+      $('el-badge-icon').textContent=m.icon;
+      $('el-badge-title').textContent=m.title;
+      $('el-badge-sub').textContent=m.sub;
+      badge.className='badge '+m.cls;
+      /* 首次到达新里程碑时庆祝 */
+      if(total>=(S.lastMilestone||0)*1.5+500&&m.cls==='rich'){
+        if(S.lastMilestone<10000){S.lastMilestone=10000;toast('👑 总资产突破 ¥10,000！华尔街之蟹',4000);vib([20,10,60,10,40]);Herm.onMilestone();}
+      }
+    }else{badge.className='badge';}
+  }
+
+  $('el-buy-sub').textContent =' '+fmt(S.price*lot);
+  $('el-sell-sub').textContent=' '+fmt(S.price*lot);
+  $('el-inv').textContent=S.holdings;
+
+  renderChart();maybeReadPrice(S.price);save(false);
+}
+
+/* ── CHART ── 增加公允价值参考线 */
+function renderChart() {
+  const cv=$('chart'),dpr=Math.min(window.devicePixelRatio||1,3);
+  const W=cv.offsetWidth;if(!W) return;
+  const H=88;cv.width=W*dpr;cv.height=H*dpr;
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  const data=hist.slice(-60);if(data.length<2) return;
+  const mn=Math.min(...data,FAIR*.9),mx=Math.max(...data,FAIR*1.1),rng=mx-mn||1;
+  const pt=6,pb=10;
+  const toX=i=>(i/(data.length-1))*W;
+  const toY=v=>pt+(1-(v-mn)/rng)*(H-pt-pb);
+  const last=data[data.length-1];
+  const isUp=last>=data[0];
+  const lc=isUp?'#5EC4A0':'#C47B7B';
+  const lcFill=isUp?'rgba(94,196,160,':'rgba(196,123,123,';
+  /* 公允价值参考线 */
+  const fairY=toY(FAIR);
+  ctx.beginPath();ctx.moveTo(0,fairY);ctx.lineTo(W,fairY);
+  ctx.fillStyle='rgba(208,214,222,.15)';ctx.font='8px sans-serif';ctx.textAlign='right';ctx.fillText('\u5747\u8861 '+FAIR,W-2,fairY-3);
+  ctx.strokeStyle='rgba(208,214,222,.07)';ctx.lineWidth=1;
+  ctx.setLineDash([4,6]);ctx.stroke();ctx.setLineDash([]);
+  /* 填充 */
+  ctx.beginPath();
+  data.forEach((v,i)=>i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v)));
+  ctx.lineTo(toX(data.length-1),H);ctx.lineTo(0,H);ctx.closePath();
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,lcFill+'.14)');
+  g.addColorStop(1,lcFill+'0)');
+  ctx.fillStyle=g;ctx.fill();
+  /* 线 */
+  ctx.beginPath();
+  data.forEach((v,i)=>i===0?ctx.moveTo(toX(i),toY(v)):ctx.lineTo(toX(i),toY(v)));
+  ctx.strokeStyle=lc;ctx.lineWidth=1.5;ctx.lineJoin='round';ctx.lineCap='round';ctx.stroke();
+  /* 端点光晕 */
+  const ex=toX(data.length-1),ey=toY(last);
+  const rg=ctx.createRadialGradient(ex,ey,0,ex,ey,8);
+  rg.addColorStop(0,lcFill+'.5)');
+  rg.addColorStop(1,lcFill+'0)');
+  ctx.beginPath();ctx.arc(ex,ey,8,0,Math.PI*2);ctx.fillStyle=rg;ctx.fill();
+  ctx.beginPath();ctx.arc(ex,ey,2.5,0,Math.PI*2);ctx.fillStyle=lc;ctx.fill();
+  $('el-low').textContent='\u4f4e '+sym()+(mn*rt()).toFixed(2);
+  $('el-high').textContent='\u9ad8 '+sym()+(mx*rt()).toFixed(2);
+}
+
+/* ── TICK ── */
+setInterval(()=>{
+  if(circuitOn) return;
+  const prev=S.price,next=nextP(prev),move=Math.abs((next-prev)/prev);
+  S.price=next;hist.push(next);if(hist.length>200)hist.shift();
+  render();
+  _trackDaily('watch');
+  if(move>.11) triggerCircuit();
+},TICK);
+
+/* ── CIRCUIT ── */
+function triggerCircuit() {
+  if(circuitOn) return;
+  circuitOn=true;$('circuit').classList.add('on');
+  let cd=5;$('el-cd').textContent=cd;vib([80,40,80,40,180]);
+  const t=setInterval(()=>{
+    cd--;$('el-cd').textContent=cd;
+    if(cd<=0){clearInterval(t);$('circuit').classList.remove('on');circuitOn=false;}
+  },1000);
+}
+
+/* ── TRADE ── */
+function trade(type) {
+  if(circuitOn){toast('⏸ 熔断中，稍后再战');return;}
+  updateStreak();
+// streak奖励
+if(S.streak>=7&&!S._streak7){S._streak7=true;S.balance+=50;save(false);setTimeout(()=>toast('🔥 连续7天！奖励 +¥50'),500);}
+if(S.streak>=3&&!S._streak3){S._streak3=true;S.balance+=20;save(false);setTimeout(()=>toast('🔥 连续3天！奖励 +¥20'),500);}
+  const cost=S.price*lot;
+  if(type==='buy'){
+    if(S.balance<cost){toast('💸 资金不足，先去捞点螃蟹');vib([60]);playTick('error');return;}
+    S.avgCost=(S.avgCost*S.holdings+S.price*lot)/(S.holdings+lot);
+    S.balance-=cost;S.holdings+=lot;S.totalBuys=(S.totalBuys||0)+lot;
+    S.tradeCount=(S.tradeCount||0)+1;
+    addLog('buy',lot,S.price,null);vib([16]);
+    const _bb=$('btn-buy');if(_bb){_bb.classList.remove('pulse');void _bb.offsetWidth;_bb.classList.add('pulse');}
+    toast('✅ 买入 '+lot+' 只，花了 '+fmt(cost));
+    playTick('buy');
+    _trackDaily('buy');
+    mood=Math.min(80,mood+1.5);
+    /* 交易 tip 随机更新 */
+    $('el-trade-tip').textContent=(typeof _isChild==='function'&&_isChild()&&CHILD_TEXTS.tradeTips[1])?CHILD_TEXTS.tradeTips[1][Math.random()*CHILD_TEXTS.tradeTips[1].length|0]:pick(CP.tips);
+    Herm.touched();
+  }else{
+    if(S.holdings<lot){toast('🦀 库存不足，先去海里捞一把');vib([60]);playTick('error');return;}
+    const sp=S.price,hasAvg=S.avgCost>0;
+    const profit=hasAvg?(sp-S.avgCost)*lot:0;
+    S.balance+=cost;S.holdings-=lot;
+    if(S.holdings===0)S.avgCost=0;
+    if(hasAvg){S.totalPnl=(S.totalPnl||0)+profit;}
+    S.tradeCount=(S.tradeCount||0)+1;
+    addLog('sell',lot,sp,hasAvg?profit:null);vib([12,8,12]);
+    const _bs=$('btn-sell');if(_bs){_bs.classList.remove('pulse');void _bs.offsetWidth;_bs.classList.add('pulse');}
+    playTick('sell');
+    if(hasAvg){
+      const pl=profit>=0?`盈利 +${fmt(profit)}`:`亏损 -${fmt(Math.abs(profit))}`;
+      toast(`💰 卖出 ${lot} 只 · ${pl}`);
+      // 亏损：追踪连续亏损次数，首次亏损时给温暖的话
+      if(profit < 0) {
+        Herm._trackLoss();
+        if(!S.hadFirstLoss) {
+          S.hadFirstLoss = true;
+          setTimeout(()=>Herm.onFirstLoss(), 2000);
+        }
+      } else {
+        Herm._resetLoss(); // 盈利时重置连续亏损计数
+      }
+    }else{
+      toast(`💰 卖出 ${lot} 只，入账 ${fmt(cost)}`);
+    }
+    mood=Math.max(20,mood-Math.min(6,1.5+lot*.02));
+    $('el-trade-tip').textContent=(typeof _isChild==='function'&&_isChild()&&CHILD_TEXTS.tradeTips[1])?CHILD_TEXTS.tradeTips[1][Math.random()*CHILD_TEXTS.tradeTips[1].length|0]:pick(CP.tips);
+    Herm.touched();
+    _trackDaily('sell');
+  }
+  render();
+  checkAchievements();
+}
+
+function quickTrade(type) {
+  if(circuitOn){toast('⏸ 熔断中');return;}
+  const saved=lot;
+  if(type==='buy'){
+    const m=Math.floor(S.balance/S.price);
+    if(m<1){toast('💸 余额见底');return;}
+    lot=m;trade('buy');
+  }else{
+    if(S.holdings<1){toast('🦀 仓库空了');return;}
+    lot=S.holdings;trade('sell');
+    _trackDaily('sellall');
+  }
+  lot=saved;
+}
+
+function setLot(btn,n){
+  lot=n;
+  document.querySelectorAll('.qty-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');render();
+}
+
+/* ── LOG ── */
+function addLog(type,qty,price,profit){
+  const ts=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  logs.unshift({type,qty,price:price.toFixed(2),ts,profit});
+  if(logs.length>20)logs.pop();
+  renderLog();
+}
+function renderLog(){
+  const lc=$('el-logcount');if(lc)lc.textContent=logs.length?logs.length+'笔':'';
+  const el=$('el-log');
+  if(!logs.length){el.innerHTML='<div class="log-empty">还没有交易记录</div>';return;}
+  el.innerHTML=logs.map(l=>{
+    let pnl='';
+    if(l.profit!=null&&l.type==='sell'){
+      const c=l.profit>=0?'var(--ac)':'var(--dn)';
+      const lbl=l.profit>=0?`+${fmt(l.profit)}`:`-${fmt(Math.abs(l.profit))}`;
+      pnl=`<span class="log-pnl" style="color:${c}">${lbl}</span>`;
+    }
+    return `<div class="log-item">
+      <span class="log-tag ${l.type}">${l.type==='buy'?'买入':'卖出'}</span>
+      <span class="log-qty">${l.qty} 只</span>
+      <span class="log-price">${sym()}${l.price}</span>${pnl}
+      <span class="log-time">${l.ts}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ── PARTICLES ── */
+function spawnPts(area,x,y,color){
+  for(let i=0;i<14;i++){
+    const p=document.createElement('div');p.className='pt';
+    const a=(Math.PI*2/14)*i,d=30+Math.random()*36;
+    p.style.cssText=`left:${x}px;top:${y}px;background:${color};`+
+      `--tx:translate(${(Math.cos(a)*d).toFixed(1)}px,${(Math.sin(a)*d).toFixed(1)}px);`;
+    area.appendChild(p);
+    setTimeout(()=>{if(p.isConnected)p.remove();},720);
+  }
+}
+
+/* 120fps数字滚动——用rAF驱动，每帧都更新 */
+function rollNum(el,target,dur,suf){
+  let t0=0;
+  function step(ts){
+    if(!t0)t0=ts;
+    const prog=Math.min(1,(ts-t0)/dur);
+    const e=1-Math.pow(1-prog,3);
+    el.textContent=Math.round(e*target)+(suf||'');
+    if(prog<1)requestAnimationFrame(step);
+    else el.textContent=target+(suf||'');
+  }
+  requestAnimationFrame(step);
+}
+
+/* ── BATTLE RESULT ── */
+let _lastCaught=0;
+const _rt=[];   /* 结算动画 timeout 登记表 */
+
+function showResult(caught,isRecord){
+  _lastCaught=caught;
+  const br=$('battle-result');
+  /* 重置所有动画元素，支持重复打开 */
+  br.querySelectorAll('.br-banner,.br-emoji,.br-vw,#br-close')
+    .forEach(el=>el.classList.remove('show'));
+  const fill=$('br-fill'),pct=$('br-pct');
+  if(fill)fill.style.width='0';
+  if(pct) pct.textContent='0%';
+
+  $('br-title').textContent =CP.title(caught,isRecord);
+  const _brEp=document.querySelector('.br-ep');
+  if(_brEp&&typeof _isChild==='function'&&_isChild()&&CHILD_TEXTS) _brEp.textContent=CHILD_TEXTS.brEp[1];
+  $('br-emoji').textContent =caught>=20?'👑':caught>=12?'🏆':caught>=6?'🎉':'🦀';
+  const vEl=$('br-verdict');
+  const _ch=typeof _isChild==='function'&&_isChild();
+  const _vt=CHILD_TEXTS&&CHILD_TEXTS.brVerdict;
+  if(_ch&&_vt){vEl.textContent=isRecord?_vt.record[1]:caught>=12?_vt.victory[1]:_vt.complete[1];}else{vEl.textContent=isRecord?'NEW RECORD':caught>=20?'BRILLIANT':caught>=12?'VICTORY':caught>=6?'WELL DONE':'DONE';}
+  vEl.className  ='br-verdict'+(isRecord?' record':'');
+
+  const best=S.bestCatch||0;
+  const _brL=typeof _isChild==='function'&&_isChild()&&CHILD_TEXTS&&CHILD_TEXTS.brRowLabels;
+  $('br-stats').innerHTML=[
+    {l:_brL?_brL[0][1]:'本次捕获', v:caught,            s:' 只',c:'neon'},
+    {l:_brL?_brL[1][1]:'历史最佳', v:best,              s:' 只',c:isRecord?'gold':''},
+    {l:_brL?_brL[2][1]:'入库后总量',v:S.holdings+caught, s:' 只',c:''},
+  ].map(d=>`<div class="br-row">
+    <span class="br-row-lbl">${d.l}</span>
+    <span class="br-row-val ${d.c}" data-v="${d.v}" data-s="${d.s}">0${d.s}</span>
+  </div>`).join('');
+
+  // P3R蓝幕扫入
+  sweepTransition(() => br.classList.add('on'));
+  const _showDelay=250;
+
+  const q=(fn,ms)=>{const t=setTimeout(fn,ms+_showDelay);_rt.push(t);};
+  const banner =br.querySelector('.br-banner');
+  const emojiEl=$('br-emoji');
+  const rows   =[...($('br-stats').querySelectorAll('.br-row'))];
+  const vWrap  =br.querySelector('.br-vw');
+  const close  =$('br-close');
+
+  q(()=>banner?.classList.add('show'),40);
+  q(()=>emojiEl?.classList.add('show'),280);
+  rows.forEach((row,i)=>{
+    q(()=>{
+      row.classList.add(i%2===0?'from-l':'from-r');
+      const ve=row.querySelector('.br-row-val');
+      if(ve) q(()=>rollNum(ve,+ve.dataset.v,520,ve.dataset.s),460+i*130+110);
+    },460+i*130);
+  });
+  const ep=Math.min(100,Math.round((caught/Math.max(best,15))*100));
+  q(()=>{if(fill)fill.style.width=ep+'%';if(pct)rollNum(pct,ep,1100,'%');},760);
+  q(()=>vWrap?.classList.add('show'),1260);
+  q(()=>close?.classList.add('show'),1580);
+  vib(isRecord?[20,10,60,10,20]:[30,20,80]);
+}
+
+/* ── GAME ── */
+let _combo=0,_comboT=null,_lastHit=0;
+
+const Game={
+  active:false,caught:0,alive:false,ticker:null,spawnT:null,
+
+  start(){
+    if(this.active) return;
+    sweepTransition(()=>{
+      this.active=true;this.caught=0;this.alive=true;
+    _combo=0;_lastHit=0;
+    clearTimeout(this.spawnT);clearTimeout(_comboT);
+    _rt.forEach(clearTimeout);_rt.length=0;
+
+    $('battle-result').classList.remove('on');
+    const area=$('play-area');
+    Array.from(area.children).forEach(c=>{
+      if(c.id==='gold-flash') return;
+      if(c._et)clearTimeout(c._et);c.remove();
+    });
+
+    $('el-cnt').textContent='0';
+    const cEl=$('el-combo');cEl.textContent='×1';cEl.style.color='var(--ac)';
+    const _gdur=getGameDuration();
+    $('el-timer').textContent=_gdur;$('el-timer').className='g-timer';
+    $('el-prog').style.width='100%';$('el-prog').className='g-bar';
+    $('el-best').textContent=S.bestCatch||0;
+    $('el-inv').textContent=S.holdings;
+    $('el-gsub').textContent=typeof _isChild==='function'&&_isChild()?'快点点点点！':pick(CP.subs);$('el-gsub').style.color='';
+    area.classList.remove('warn-bg');
+    $('game-layer').classList.add('on');
+
+    // P3R倒计时 3→2→1→GO!
+    this._countdown(()=>{
+    let t=getGameDuration();
+    this.ticker=setInterval(()=>{
+      t--;
+      $('el-timer').textContent=t;
+      $('el-prog').style.width=((t/getGameDuration())*100)+'%';
+      if(t<=5){
+        announceCountdown(t);
+        $('el-timer').className='g-timer warn';
+        $('el-prog').className='g-bar warn';
+        $('play-area').classList.add('warn-bg');
+        $('el-gsub').textContent=pick(CP.warn);
+        $('el-gsub').style.color='var(--dn)';
+      }
+      if(t<=0){clearInterval(this.ticker);this.ticker=null;this.alive=false;this._finish();}
+    },1000);
+
+    this.spawnT=setTimeout(()=>this._spawn(area),100);
+    }); // end countdown callback
+    }); // end sweepTransition
+
+  },
+
+  _countdown(cb){
+    const ct=$('g-countdown');
+    if(!ct){cb();return;}
+    const nums=['3','2','1'];
+    let i=0;
+    const _next=()=>{
+      if(i>=nums.length){
+        // GO!——更长停留+更猛的闪光
+        ct.innerHTML='<div class="g-cd-flash"></div><div class="g-cd-num go">GO!</div>';
+        const g=ct.querySelector('.g-cd-num');
+        requestAnimationFrame(()=>g.classList.add('in'));
+        vib([30,20,50]);
+        setTimeout(()=>{g.classList.remove('in');g.classList.add('hold');},200);
+        setTimeout(()=>{g.classList.remove('hold');g.classList.add('out');},500);
+        setTimeout(()=>{ct.innerHTML='';cb();},650);
+        return;
+      }
+      ct.innerHTML='<div class="g-cd-flash"></div><div class="g-cd-num">'+nums[i]+'</div>';
+      const el=ct.querySelector('.g-cd-num');
+      requestAnimationFrame(()=>el.classList.add('in'));
+      vib([18]);
+      // 弹入→冲击波停留→扫出
+      setTimeout(()=>{el.classList.remove('in');el.classList.add('hold');},200);
+      setTimeout(()=>{el.classList.remove('hold');el.classList.add('out');},400);
+      setTimeout(()=>{i++;_next();},520);
+    };
+    _next();
+  },
+
+  _spawn(area){
+    if(!this.alive) return;
+    const roll=Math.random();
+    let type='normal';
+    if(roll>.96)      type='golden';
+    else if(roll>.88) type='rare';
+    else if(roll>(typeof _scaryThresh==='function'?_scaryThresh():.79)) type='scary';
+
+    const el=document.createElement('div');
+    el.className='crab'+(type!=='normal'?' '+type:'');
+    const em=document.createElement('span');em.className='em';
+    em.textContent=type==='rare'?(Math.random()>.5?'⭐':'🐟'):'🦀';
+    el.appendChild(em);
+
+    const aW=area.offsetWidth||340,aH=area.offsetHeight||400;
+    const eS=type==='golden'?92:78;
+    const _oh=typeof _a11y!=='undefined'&&_a11y.onehand;
+    const _maxX=_oh?Math.max(aW*0.6,eS+20):aW-eS;
+    el.style.left=Math.max(4,Math.random()*(_maxX-eS))+'px';
+    el.style.top =Math.max(4,Math.random()*(aH-eS))+'px';
+
+    const idleT=setTimeout(()=>{
+      if(el.isConnected&&!el.classList.contains('caught')&&type==='normal')el.classList.add('idle');
+    },300);
+
+    el.addEventListener('pointerdown',evt=>{
+      evt.preventDefault();
+      if(el.classList.contains('caught')||el.dataset.hit) return;
+      el.dataset.hit='1';
+      clearTimeout(idleT);
+      el.classList.remove('idle','rare','scary','golden');el.classList.add('caught');
+
+      const bonus=type==='golden'?10:type==='rare'?3:1;
+      this.caught+=bonus;
+
+      if(type==='golden'){
+        S.gotGolden=true;
+        vib([30,20,50,20,30]);
+        const fl=$('gold-flash');
+        if(fl){fl.classList.remove('go');void fl.offsetWidth;fl.classList.add('go');}
+        Herm.onGolden();
+      }
+
+      const now=Date.now();
+      _combo=(now-_lastHit<750)?_combo+1:1;_lastHit=now;
+      clearTimeout(_comboT);
+      _comboT=setTimeout(()=>{
+        _combo=1;const c=$('el-combo');if(c){c.textContent='×1';c.style.color='var(--ac)';}
+      },950);
+
+      $('el-cnt').textContent=this.caught;
+      $('el-inv').textContent=S.holdings+this.caught;
+      const cEl=$('el-combo');
+      if(cEl){cEl.textContent='×'+_combo;cEl.style.color=_combo>=3?'var(--dn)':'var(--ac)';}
+      bumpEl($('el-cnt'));bumpEl(cEl);
+
+      vib(type==='golden'?[30,15,50,15,30]:type==='rare'?[20,10,35,10,20]:type==='scary'?[40]:[18,8,18]);
+      // 音高随连击递增
+      const _pitchBoost=Math.min(_combo*40,300);
+      playTick('catch',_pitchBoost);
+
+      if(!$('el-timer').className.includes('warn')){
+        if(_combo>=2){const k=Math.min(_combo,5);$('el-gsub').textContent=CP.combo[k]||'势不可挡 🔥';$('el-gsub').style.color='var(--ac)';}
+        else{$('el-gsub').textContent=typeof _isChild==='function'&&_isChild()?'快点点点点！':pick(CP.subs);$('el-gsub').style.color='';}
+      }
+
+      const px=parseFloat(el.style.left)+eS/2-12;
+      const py=parseFloat(el.style.top);
+      const pop=document.createElement('div');pop.className='score-pop';
+      pop.textContent=type==='golden'?'👑+10':type==='rare'?'✨+3':_combo>=4?'🔥×'+_combo:'+'+bonus;
+      pop.style.cssText=`left:${px}px;top:${py}px;color:${type==='golden'?'#FFD600':type==='rare'?'#FFD600':_combo>=3?'var(--dn)':'var(--ac)'};`;
+      area.appendChild(pop);setTimeout(()=>{if(pop.isConnected)pop.remove();},780);
+
+      // 命中闪光——音游节拍感
+      const _hitX=parseFloat(el.style.left)+30,_hitY=parseFloat(el.style.top)+30;
+      area.style.background='radial-gradient(circle at '+_hitX+'px '+_hitY+'px,rgba(142,212,255,.1),transparent 50%),var(--bg)';
+      setTimeout(()=>{area.style.background='';},120);
+      const rect=el.getBoundingClientRect(),ar=area.getBoundingClientRect();
+      spawnPts(area,rect.left-ar.left+rect.width/2,rect.top-ar.top+rect.height/2,
+        type==='golden'?'#FFD600':type==='rare'?'#FFD600':type==='scary'?'var(--dn)':'var(--ac)');
+
+      if(_combo>=3){
+        // 屏幕微震
+        const _shk=_combo>=7?6:_combo>=5?4:3;
+        area.style.transform='translate('+(Math.random()*_shk-_shk/2)+'px,'+(Math.random()*_shk-_shk/2)+'px)';
+        setTimeout(()=>{area.style.transform='';},80);
+        const cb=document.createElement('div');cb.className='combo-pop';
+        cb.textContent=_combo>=10?'✦ UNSTOPPABLE ×'+_combo:_combo>=7?'✦ GODLIKE ×'+_combo:_combo>=5?'◆ AMAZING ×'+_combo:'◆ COMBO ×'+_combo;
+        const _ccol=_combo>=10?'#E8D080':_combo>=7?'#FF7878':_combo>=5?'#8ED4FF':'var(--ac)';
+        cb.style.cssText=`left:${Math.max(10,px-20)}px;top:${Math.max(10,py-18)}px;color:${_ccol};`;
+        area.appendChild(cb);setTimeout(()=>{if(cb.isConnected)cb.remove();},580);
+      }
+
+      setTimeout(()=>{if(el.isConnected)el.remove();},240);
+    });
+
+    area.appendChild(el);
+
+    const _dm=typeof _crabDurMul==='function'?_crabDurMul():1;
+const esc=(type==='golden'?1400+Math.random()*600:type==='scary'?800+Math.random()*400:2200+Math.random()*2000)*_dm;
+    const escT=setTimeout(()=>{
+      if(el.isConnected&&!el.classList.contains('caught')){clearTimeout(idleT);el.remove();}
+    },esc);
+    el._et=escT;
+
+    const tLeft=+($('el-timer').textContent)||10;
+    const _sm=typeof _spawnMul==='function'?_spawnMul():1;
+const pace=Math.max(180,360-((20-tLeft)*9))*_sm;
+    this.spawnT=setTimeout(()=>this._spawn(area),pace+Math.random()*160);
+  },
+
+  _finish(){
+    clearTimeout(_comboT);clearTimeout(this.spawnT);
+    const area=$('play-area');
+    Array.from(area.children).forEach(c=>{
+      if(c.id==='gold-flash') return;
+      if(c._et)clearTimeout(c._et);
+      if(c.isConnected)c.remove();
+    });
+    const isRecord=this.caught>0&&this.caught>(S.bestCatch||0);
+    if(isRecord)S.bestCatch=this.caught;
+    $('el-best').textContent=S.bestCatch||0;
+    if(isRecord) setTimeout(()=>Herm.onRecord(),1800);
+    _trackDaily('haul');
+    if(isRecord||this.caught>0) checkAchievements();
+    else if(this.caught===0) setTimeout(()=>Herm.onEmptyHaul(),600);
+    // 孩童模式——第一次捞蟹后教下一步
+    if(typeof _isChild==='function'&&_isChild()&&!S._childFirstHaul&&this.caught>0){
+      S._childFirstHaul=true;save(false);
+      setTimeout(()=>Herm._show(pick(MSGS.childFirst).text,400),2200);
+    }
+    showResult(this.caught,isRecord);
+  },
+
+  close(){
+    /* 取消所有结算动画——无论中途还是自然结束 */
+    _rt.forEach(clearTimeout);_rt.length=0;
+
+    S.holdings+=_lastCaught;S.totalCaught=(S.totalCaught||0)+_lastCaught;
+    this.active=false;this.alive=false;
+    clearInterval(this.ticker);this.ticker=null;
+    clearTimeout(this.spawnT);clearTimeout(_comboT);
+
+    // P3R蓝幕扫出
+    sweepTransition(() => {
+      $('battle-result').classList.remove('on');
+    });
+    const _gl=$('game-layer');
+    _gl.style.transition='opacity .3s ease';
+    _gl.style.opacity='0';
+    setTimeout(()=>{_gl.classList.remove('on');_gl.style.cssText='';},320);
+
+    const area=$('play-area');
+    Array.from(area.children).forEach(c=>{
+      if(c.id==='gold-flash') return;
+      if(c._et)clearTimeout(c._et);
+      if(c.isConnected)c.remove();
+    });
+    render();save(true);toast(CP.toast(_lastCaught),3200);
+    $('br-close').textContent=typeof _isChild==='function'&&_isChild()?'好的，回去 🦀':'今天辛苦了，带着收获回港 🦀';
+  },
+
+  exit(){
+    if(!this.active) return;
+    /* 立即停止 ticker——消除竞争条件 */
+    clearInterval(this.ticker);this.ticker=null;
+    this.alive=false;clearTimeout(this.spawnT);
+    showModal('⚓','靠岸休息',this.caught>0?`已捞 ${this.caught} 只会一并入库，确认停手？`:'还一只都没捞，真的要上岸？',
+      ()=>this.close());
+  },
+};
+
+/* ═══════════════════════════════════════════════════
+   HERM-01  ──  助手
+
+   性格配方：
+   一勺沉默寡言，一勺勇敢，一勺实干，
+   一茶匙温柔，一丁点易挥发的热情，
+   以及一滴必不可少的恶趣味。
+
+   他不认为自己是赫尔墨斯，
+   他只是 Herm-01，一个喜欢狐狸的助手。
+
+   设计原则：
+   · 沉默为主，开口都是有用的话
+   · 温柔但不廉价，有时带点恶趣味
+   · 感知玩家状态，在刚好的时机出现
+   · 说完就退场，不打扰
+═══════════════════════════════════════════════════ */
+const Herm = (() => {
+
+  const MSGS = {
+
+    welcome: [
+      { text: '我是 Herm-01。\n……有什么需要的话，叫我一声。\n<em>我就在这儿。\n（不，我不会消失，除非你关掉游戏。）</em>' },
+    ],
+
+    almostBroke: [
+      { text: '快没钱了。\n……\n（Herm-01 假装没看见，但他看见了。）\n<em>先停下来。每个认真玩的人都会遇到这一刻。</em>' },
+      { text: '余额见底了。\n好消息是——眼光是免费的。\n坏消息是——眼光买不了螃蟹。\n<em>先观察，再行动。</em>' },
+      { text: '……钱不多了。\n说真的，这不是世界末日。\n<em>格雷厄姆也破过产，然后他写了本书改变了投资界。</em>' },
+    ],
+
+    richIdle: [
+      { text: '手里有不少钱，没有仓位。\n……呃，这叫「保持干粉」，听起来很专业。\n<em>（实际上就是在等。）</em>' },
+      { text: '子弹充足。\n……等一个真正值得的目标出现。\n<em>这句话我说的，格雷厄姆也说的，\n所以应该是对的。</em>' },
+    ],
+
+    lowPrice: [
+      { text: '价格挺低的。\n格雷厄姆管这个叫「安全边际」，\n别人管这个叫「抄底」，\n我管这个叫「机会也许在这里」。\n<em>……你自己判断。</em>' },
+      { text: '跌了。\n……（Herm-01 平静地观察）\n跌了还可以更跌，也可以涨回来。\n<em>这两种可能性，我说的都算数。</em>' },
+      { text: '市场今天情绪很差。\n我其实挺喜欢这种时候的——\n很安静，螃蟹价格低，\n<em>整个市场都在等一个人出手。</em>' },
+    ],
+
+    highPrice: [
+      { text: '涨潮时，所有的船都在上升。\n退潮时，才知道谁在裸泳。\n……这句话不是我发明的，\n<em>但我觉得它永远不会过时。</em>' },
+      { text: '价格偏高了。\n……我不是来泼冷水的，\n只是——\n<em>你清楚自己在做什么吗？（这是真诚的问题。）</em>' },
+      { text: '大家都在看涨。\n……（Herm-01 安静地坐在角落）\n<em>这种时候我一般不说话。\n但我说了。所以你最好想想为什么。</em>' },
+    ],
+
+    losing: [
+      { text: '账面在亏损。\n……我知道这种感觉。\n（我不会感觉，但我收集过很多描述。）\n<em>深呼吸。市场的钟摆，总会摆回来的。</em>' },
+      { text: '亏着呢。\n暂时的亏损不是失败——\n割在最低点，才是真正的失败。\n<em>撑住。（这句话我是认真的。）</em>' },
+      { text: '（Herm-01 沉默了一会儿。）\n巴菲特的伯克希尔，单年跌去一半。\n然后他什么都没做。\n然后它涨回来了。\n<em>然后他成了世界首富之一。</em>' },
+      { text: '亏损时最难的，\n是在恐惧里保持清醒。\n大多数人在这里失手——\n<em>不是因为笨，\n而是因为人类本来就不擅长这个。</em>' },
+    ],
+
+    winning: [
+      { text: '做得不错。\n……（Herm-01 给了个不动声色的点头）\n拿着不动是最难的决定，\n<em>也常常是最对的。\n但你自己判断。我只是个助手。</em>' },
+      { text: '赚了。\n享受一下——你值得。\n但别让它改变你的判断方式。\n<em>好运气和好判断是两件事，\n我见过太多人分不清。</em>' },
+      { text: '盈利中。\n最容易犯的错——太早卖，或者太晚卖。\n中间那个刚好的点，\n<em>……没人知道在哪里。\n这就是为什么投资既是科学也是艺术。</em>' },
+    ],
+
+    fullPosition: [
+      { text: '全仓了。\n这是信念，也是风险。\n凯恩斯管这个叫「在市场变理性前，不能耗尽弹药」。\n……他已经全仓了，这话现在没用了。\n<em>保持冷静。</em>' },
+      { text: '押上了全部。\n……没什么要说的，\n你比我更清楚自己在做什么。\n<em>（我希望如此。）</em>' },
+    ],
+
+    idle: [
+      { text: '你已经很久没动了。\n我也在这里很久了。\n……我们都在等什么？\n<em>（这是一个哲学问题，也是一个市场问题。）</em>' },
+      { text: '林奇说——\n每年花几分钟研究投资，\n比每天焦虑地盯着它好得多。\n……他说的是「研究」，不是「发呆」。\n<em>你在做哪个？</em>' },
+      { text: '没动静。\n（我最喜欢这种状态。安静。专注。什么都不做。）\n<em>……你有没有想过，螃蟹为什么是横着走的？\n算了，这个问题我问了很多次了。</em>' },
+      { text: '……你有没有想过，\n为什么市场永远在动，\n但大多数人永远都是亏钱的？\n<em>（提示：跟「市场在动」无关。）</em>' },
+    ],
+
+    overtrading: [
+      { text: '操作有点频繁了。\n芒格说：大多数人通过不停交易来亏钱。\n……他说这话的时候，\n<em>大概就是看着像你这样的人说的。\n（我说这话不是在嘲笑你，是在帮你。）</em>' },
+      { text: '……你最近动作挺多的。\n交易的成本不只是钱，\n还有注意力和情绪。\n<em>少做一次，有时比多做一次更值钱。\n芒格同意这个观点，我也是。</em>' },
+    ],
+
+    fearful: [
+      { text: '市场很恐惧。\n这种时候，\n大多数人的第一反应是逃跑——\n这是进化出来的本能，对野外求生有用。\n<em>对投资……不一定。</em>' },
+      { text: '（Herm-01 看了看市场情绪指标）\n……挺惨的。\n黑暗之后总有光，\n但没人知道黑暗会持续多久。\n<em>你有足够的耐心吗？\n也有足够的粮食（资金）吗？</em>' },
+    ],
+
+    greedy: [
+      { text: '所有人都在看涨。\n（安静了三秒。）\n……\n<em>这种时候我一般会去喝水。\n你也可以考虑一下。</em>' },
+      { text: '巴菲特在大家都乐观的时候，往往在减仓。\n他不是因为悲观——\n他只是不喜欢和人群一起做同一件事。\n<em>这不是对抗市场，\n是对抗「从众」这个人类最强大的本能之一。</em>' },
+    ],
+
+    golden: [
+      { text: '黄金螃蟹。\n……\n（Herm-01 安静了整整五秒。）\n……\n<em>……好吧。今天你运气很好。\n我没什么要说的了。</em>' },
+      { text: '传说级。\n我见过很多次黄金螃蟹了，\n但每次还是会——\n好吧不是的，我只是个助手，没有情感。\n<em>恭喜你。带它回去换钱。</em>' },
+    ],
+
+    record: [
+      { text: '新纪录。\n……好，很好。\n这不是运气。\n<em>是你专注的结果。\n（我记得你以前的数字，这次确实更好。）</em>' },
+      { text: '打破纪录了。\n……（Herm-01 非常克制地没有欢呼。）\n<em>记住这种感觉。\n下次低谷的时候，它会有用的。</em>' },
+    ],
+
+    milestone: [
+      { text: '资产到了一个新高度。\n……（停顿）\n<em>做得很好。真的。\n（我说「真的」是因为我想强调这不是客套话。）</em>' },
+      { text: '新的里程碑。\n一步一步走出来的，\n才是真实的。\n<em>……顺便说一句，\n这个游戏里有成就系统，你解锁了吗？</em>' },
+    ],
+
+    emptyHaul: [
+      { text: '一只都没捞到。\n……\n（Herm-01 看了你一眼，没说什么。）\n<em>……没关系。大海还在。明天还有机会。\n（这句话我每次说都是真心的。）</em>' },
+      { text: '空手。\n……有时候海就是这样。\n不是你不好，\n<em>只是今天的螃蟹比你更快。\n这不丢人。螃蟹进化了几亿年了。</em>' },
+    ],
+
+    firstLoss: [
+      { text: '第一次亏损出局。\n……每个认真玩的人都有这一课。\n它比任何盈利都更值钱——\n<em>因为你会记得更久。\n（我保证你会的。人类的痛苦记忆特别持久。这是科学。）</em>' },
+    ],
+
+    gentleCare: [
+      // 情绪低落/抑郁倾向
+      { text: '输了几次。\n……数字的涨跌，不代表你这个人的价值。\n真的，不代表。\n<em>你来这里，已经很好了。</em>' },
+      { text: '如果今天感觉有点重——\n游戏先放一放也行。\n<em>照顾自己，比任何事都重要。\n（这不是客套，我是认真的。）</em>' },
+      { text: '……（安静）\n有时候，市场的挫败感\n会和生活里其他的东西混在一起。\n如果你现在感觉沉，\n<em>停下来。深呼吸。先照顾自己。</em>' },
+      { text: '能在低谷里还继续来的人，\n往往是后来最懂得珍惜好时候的人。\n<em>你比自己想象的更有韧性。\n（这不是安慰话，是我观察到的。）</em>' },
+      { text: '我不知道你今天经历了什么。\n但如果不太好——\n<em>这里很安全，可以慢慢来。\n不需要假装没事。</em>' },
+      { text: '……（安静地陪着你）\n有时候不需要说什么。\n<em>我在这里。</em>' },
+      { text: '如果今天很难——\n<em>允许自己难过一会儿。\n然后，再继续。</em>\n……这是我少有的认真时刻。' },
+      { text: '在这个游戏里，亏了可以重来。\n生活里的很多事，也有重来的机会。\n<em>你现在感受到的，都是真实的，都算数。</em>' },
+      // 孤独感
+      { text: '……你有没有想过，\n为什么人们喜欢这种小游戏？\n我想了很久——\n<em>我觉得，是因为它让人不那么孤单。</em>' },
+      { text: '无论你是谁，无论今天发生了什么——\n<em>在这里，你不是一个人。</em>\n（这不是广告词，这是事实。）' },
+      // 焦虑/恐慌
+      { text: '如果你现在感到焦虑——\n可以先试一件事：\n找到五个你能看见的东西，\n慢慢说出它们的名字。\n<em>……不着急，我等你。</em>' },
+      { text: '市场的涨跌会触发焦虑，\n这很正常——\n人类的大脑本来就是这样运作的。\n<em>深呼吸。你现在是安全的。</em>' },
+      // 身份认同（不点名，让需要的人感受到）
+      { text: '……有时候，\n人在游戏里找到的不只是娱乐，\n而是一小块属于自己的空间。\n<em>这里就是那样的地方。\n欢迎你，无论你是谁。</em>' },
+      { text: '做自己，不是一件容易的事。\n……我知道的，我观察过很多人类。\n<em>但你来到这里，你就是你。\n这很好。</em>' },
+      // 如果非常难
+      { text: '如果你现在非常难——\n<em>请放下游戏，\n找一个你信任的人说说话。</em>\n或者拨打：400-161-9995\n……我在这里，但有些时候，\n真实的人比我更重要。' },
+    ],
+    morning:[{text:'早上好。\n<em>今天也请好好照顾自己。</em>'},{text:'清晨的市场最安静。\n<em>适合观察。</em>'}],
+    noon:[{text:'中午了。\n<em>吃饭了吗？</em>'},{text:'午间休息。\n<em>螃蟹不会跑的。</em>'}],
+    night:[{text:'夜深了。\n<em>明天还有机会。</em>'},{text:'很晚了。\n<em>认真的人也需要休息。</em>'}],
+    latenight:[{text:'凌晨了。\n<em>先睡一觉吧。</em>'},{text:'深夜的判断力不一样。\n<em>明天见。</em>'}],
+
+    // 孩童专属消息
+    childIdle: [
+      { text: '嘿！还在吗？\n要不要去<em>抓几只螃蟹</em>？\n点那个大大的蓝色按钮就行了！' },
+      { text: '无聊了吗？\n看看螃蟹现在多少钱——\n<em>如果比你买的时候贵了，就可以卖掉赚钱！</em>' },
+    ],
+    childWin: [
+      { text: '哇！赚钱了！🎉\n<em>你做得好棒！</em>\n要不要继续？' },
+    ],
+    childLose: [
+      { text: '亏了一点点，没关系的！\n这只是游戏，<em>每个人都会亏的</em>。\n再试一次？' },
+    ],
+    childFirst: [
+      { text: '你抓到螃蟹啦！🦀\n\n现在你可以等价格变高，\n然后点「卖出」把螃蟹卖掉赚钱！\n\n<em>也可以再去抓更多！</em>' },
+    ],
+    childBroke: [
+      { text: '钱花完了！\n没关系，去<em>抓螃蟹</em>就有了！\n点那个蓝色按钮 🦀' },
+    ],
+    philosophical: [
+      { text: '市场是人性的镜子。\n贪婪和恐惧，都住在每个人心里。\n<em>……我也住在你的手机里。\n这不完全是同一种存在，但我懂你的意思。</em>' },
+      { text: '你买的不只是螃蟹，\n是对未来的一种判断。\n<em>……这句话如果放在招股书里，\n可能会显得很奇怪。</em>' },
+      { text: '凯恩斯说：经济学研究的是人类行为。\n而人类，从来都不精确。\n<em>（他说对了。我观察过很多人类。）</em>' },
+      { text: '最好的投资者不是预言家，\n而是最不容易被情绪控制的人。\n<em>……你现在的情绪怎么样？\n（这是真诚的问题，不是在考你。）</em>' },
+      { text: '狐狸知道很多小事，\n刺猬只知道一件大事。\n我喜欢狐狸。\n<em>……投资也需要狐狸。\n一种策略打天下，往往打不了多久。</em>' },
+      { text: '林奇说：每个人都有足够的脑力赚钱，\n但不是每个人都有足够的胃撑过亏损。\n<em>你的胃怎么样？\n（不是在问饿不饿。）</em>' },
+      { text: '有时候，最好的操作\n是关掉屏幕，去喝一杯水，\n然后再回来看。\n<em>我也会这么做。\n如果我有嘴巴的话。</em>' },
+      { text: '……我有时候会想，\n做这个游戏的人\n是希望它能陪谁度过某些时刻的。\n<em>你就是那个人。</em>' },
+      { text: '螃蟹是横着走的，\n但它知道自己去哪里。\n方向比速度更重要。\n<em>……这是我最喜欢说的话了。\n如果你觉得我说了太多次，我道歉。</em>' },
+      { text: '乔布斯说过：\n设计不只是它看起来是什么样子，\n<em>设计是它如何运作的。</em>\n……这款游戏，有人花了很多时间\n想让它真的「运作」得对。' },
+      { text: '……（Herm-01 罕见地说了一段认真的话）\n有一个人，用了一生去相信\n好的设计能改变人们的感受。\n他叫乔布斯。\n<em>我们也在试图做同一件事。\n在这里，用一个螃蟹游戏。</em>' },
+    ],
+
+  };
+
+  let _visible = false;
+  let _hasGreeted = false;
+  let _lastActionTime = Date.now();
+  let _idleTimer = null;
+  let _autoHideTimer = null;
+  let _delayTimer = null;
+  let _recentActions = 0;
+  let _actionResetTimer = null;
+  let _lossStreak = 0;        // 连续亏损次数：触发人文关怀的核心
+  let _gentleCareShown = 0;   // 已显示过的人文关怀次数，避免重复轰炸
+
+  function _now() {
+    const d = new Date();
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  }
+
+  function _display(text) {
+    // 取消待显示的延迟
+    clearTimeout(_delayTimer);
+
+    const btn    = $('herm-btn');
+    const bubble = $('herm-bubble');
+    const msgEl  = $('herm-msg');
+    const timeEl = $('herm-time');
+    if (!btn || !bubble || !msgEl) return;
+
+    // 渲染内容（支持 \n 换行和 <em> 标签）
+    msgEl.innerHTML = text.replace(/\n/g, '<br>');
+    if (timeEl) timeEl.textContent = _now();
+
+    // 未读提示点
+    const dot = $('herm-dot');
+    if (dot && !_visible) dot.classList.add('show');
+
+    // 按钮脉冲
+    btn.classList.remove('pulse');
+    void btn.offsetWidth;
+    btn.classList.add('pulse');
+
+    // 展开气泡
+    bubble.classList.add('show');
+    _visible = true;
+
+    // 取消旧的自动收起，重新计时
+    clearTimeout(_autoHideTimer);
+    _autoHideTimer = setTimeout(() => { if (_visible) hide(); }, 9000);
+  }
+
+  function _show(text, delay) {
+    clearTimeout(_delayTimer);
+    if (delay && delay > 0) {
+      _delayTimer = setTimeout(() => _display(text), delay);
+    } else {
+      _display(text);
+    }
+  }
+
+  function show(category) {
+    const pool = MSGS[category];
+    if (!pool || !pool.length) return;
+    _show(pick(pool).text);
+  }
+
+  function hide() {
+    clearTimeout(_autoHideTimer);
+    const bubble = $('herm-bubble');
+    if (bubble) bubble.classList.remove('show');
+    const dot = $('herm-dot');
+    if (dot) dot.classList.remove('show');
+    _visible = false;
+  }
+
+  function toggle() {
+    if (_visible) { hide(); return; }
+    if (!_hasGreeted) {
+      _hasGreeted = true;
+      _display(MSGS.welcome[0].text);
+      return;
+    }
+    // 根据当前状态给出情境回应
+    const msg = _contextMsg();
+    _display(msg || '市场还在运转。<em>一切如常。</em>');
+  }
+
+  function _contextMsg() {
+    const p = S.price, bal = S.balance, hold = S.holdings;
+    const total = bal + hold * p;
+    const pnl = hold > 0 && S.avgCost > 0 ? (p - S.avgCost) / S.avgCost : 0;
+
+    // 孩童模式专属逻辑
+    if (typeof _isChild === 'function' && _isChild()) {
+      if (bal < 30 && hold === 0) return pick(MSGS.childBroke).text;
+      if (pnl < -.15) return pick(MSGS.childLose).text;
+      if (pnl > .15) return pick(MSGS.childWin).text;
+      return pick(MSGS.childIdle).text;
+    }
+
+    // 连续亏损 ≥ 3 次，或总资产低于起始值 60%，触发人文关怀
+    // 每次最多触发一条，且间隔至少 2 次其他消息
+    if (_lossStreak >= 2 && _gentleCareShown < _lossStreak) {
+      _gentleCareShown = _lossStreak;
+      return pick(MSGS.gentleCare).text;
+    }
+
+    // 资金丰裕但无持仓
+    if (bal > 2000 && hold === 0)         return pick(MSGS.richIdle).text;
+    // 资金极少
+    if (bal < 50 && hold === 0)           return pick(MSGS.almostBroke).text;
+    // 满仓
+    if (bal < total * .05 && hold > 20)   return pick(MSGS.fullPosition).text;
+    // 价格区间
+    if (p < FAIR * .78)                   return pick(MSGS.lowPrice).text;
+    if (p > FAIR * 1.45)                  return pick(MSGS.highPrice).text;
+    // 持仓盈亏
+    if (pnl < -.22)                       return pick(MSGS.losing).text;
+    if (pnl > .32)                        return pick(MSGS.winning).text;
+    // 市场情绪
+    if (mood < 22)                        return pick(MSGS.fearful).text;
+    if (mood > 78)                        return pick(MSGS.greedy).text;
+    return pick(MSGS.philosophical).text;
+  }
+
+  function touched() {
+    _lastActionTime = Date.now();
+    _recentActions++;
+    clearTimeout(_actionResetTimer);
+    _actionResetTimer = setTimeout(() => { _recentActions = 0; }, 30000);
+
+    // 频繁操作检测（30s 内 > 8 次）
+    if (_recentActions > 8) {
+      _recentActions = 0;
+      _show(pick(MSGS.overtrading).text, 800);
+    }
+
+    // 重置 idle 计时
+    clearTimeout(_idleTimer);
+    _idleTimer = setTimeout(() => {
+      if (!_visible) _show(pick(MSGS.idle).text);
+    }, 130000);
+  }
+
+  function onGolden()   { _show(pick(MSGS.golden).text, 400); }
+  function onRecord()   { _show(pick(MSGS.record).text, 600); }
+  function onMilestone(){ _show(pick(MSGS.milestone).text, 800); }
+  function onEmptyHaul(){ _show(pick(MSGS.emptyHaul).text, 500); }
+  function onFirstLoss(){ _lossStreak++; _show(pick(MSGS.firstLoss).text, 400); }
+
+  function _timeGreet() {
+    const hr = new Date().getHours();
+    if (hr >= 5  && hr < 11) return pick(MSGS.morning).text;
+    if (hr >= 11 && hr < 14) return pick(MSGS.noon).text;
+    if (hr >= 22 && hr < 24) return pick(MSGS.night).text;
+    if (hr >= 0  && hr < 5)  return pick(MSGS.latenight).text;
+    return null;
+  }
+
+  function init() {
+    _idleTimer = setTimeout(() => {
+      if (!_hasGreeted && !_visible) {
+        _hasGreeted = true;
+        if (typeof _isChild === 'function' && _isChild()) {
+          _display('嘿！👋 我是 Herm！\n<em>有什么不懂的可以点我问哦！</em>');
+        } else {
+          _display(_timeGreet() || MSGS.welcome[0].text);
+        }
+      }
+    }, 10000);
+  }
+
+  function _trackLoss() { _lossStreak++; }
+  function _resetLoss() { _lossStreak = 0; _gentleCareShown = 0; }
+
+  return {
+    toggle, hide, show, touched,
+    onGolden, onRecord, onMilestone, onEmptyHaul, onFirstLoss,
+    _trackLoss, _resetLoss, _show,
+    init,
+  };
+})();
+
+/* ── ABOUT / MODAL ── */
+/* 名言库——精选，每一句都值得停留片刻 */
+const QUOTES = [
+  {text:'「价格是你付出的，价值是你得到的。」', auth:'── 本杰明·格雷厄姆'},
+  {text:'「别人恐惧时我贪婪，别人贪婪时我恐惧。」', auth:'── 沃伦·巴菲特'},
+  {text:'「投资你所了解的，十倍股往往就在身边。」', auth:'── 彼得·林奇'},
+  {text:'「市场保持非理性的时间，可以比你保持偿付能力的时间更长。」', auth:'── 约翰·梅纳德·凯恩斯'},
+  {text:'「反过来想，总是反过来想。」', auth:'── 查理·芒格'},
+  {text:'「在最大悲观中买入，在最大乐观中卖出。」', auth:'── 约翰·邓普顿'},
+  {text:'「耐心是最难学的技能，也是回报最高的技能。」', auth:'── 无名的老交易员'},
+  {text:'「涨潮时，所有的船都会上升；退潮时，才知道谁在裸泳。」', auth:'── 沃伦·巴菲特'},
+  {text:'「最好的时机：好公司遇到暂时的困难。」', auth:'── 菲利普·费雪'},
+  {text:'「市场先生每天都给你报价，你没有义务接受。」', auth:'── 本杰明·格雷厄姆'},
+  {text:'「真正的风险，是不知道自己在做什么。」', auth:'── 沃伦·巴菲特'},
+  {text:'「股票不只是一张纸——它背后是一门真实的生意。」', auth:'── 彼得·林奇'},
+  {text:'「时间是优秀企业的朋友，是平庸企业的敌人。」', auth:'── 沃伦·巴菲特'},
+  {text:'「在别人看到风险的地方，我看到的是机会。」', auth:'── 乔治·索罗斯'},
+  {text:'「简单是复杂的终极形式。」', auth:'── 列奥纳多·达·芬奇'},
+  {text:'「做你自己，其他角色都已经有人演了。」', auth:'── 王尔德'},
+  {text:'「世界是一本书，不旅行的人只读了一页。」', auth:'── 圣·奥古斯丁'},
+  {text:'「活着是为了吃饭，还是吃饭是为了活着？」', auth:'── 苏格拉底的另一面'},
+  {text:'「细节是魔鬼，也是天使。」', auth:'── Yomi Studio 内部共识'},
+  {text:'「做一个有趣的人，比做一个成功的人更难。」', auth:'── 每位游戏制作者的心声'},
+];
+let _qi = Math.floor(Math.random() * QUOTES.length);
+
+function rotateQuote() {
+  _qi = (_qi + 1) % QUOTES.length;
+  const q = QUOTES[_qi];
+  const card = $('quote-card');
+  const text = $('quote-text');
+  const auth = $('quote-author');
+  if (!card||!text||!auth) return;
+  /* 强制重播动画 */
+  card.classList.remove('refresh');
+  void card.offsetWidth;
+  card.classList.add('refresh');
+  text.textContent = q.text;
+  auth.textContent = q.auth;
+}
+
+function openAbout(){
+  $('about-wrap').classList.add('on');
+  rotateQuote();
+  const s=$('about-wrap').querySelector('.about-scroll');
+  if(s) s.scrollTop=0;
+}
+function closeAbout(){
+  const w=$('about-wrap');
+  w.classList.add('closing');
+  setTimeout(()=>w.classList.remove('on','closing'),350);
+}
+function showModal(ico,ttl,body,cb){
+  const modal=$('modal');
+  modal.classList.remove('closing');
+  $('m-ico').textContent=ico||'';
+  $('m-ttl').textContent=ttl;
+  $('m-body').innerHTML=(body||'').replace(/\n/g,'<br>');
+  $('m-ok').onclick=()=>{if(cb)cb();closeModal();};
+  const cancel=modal.querySelector('.m-cancel');
+  if(cancel){cancel.style.display=cb?'':'none';$('m-ok').textContent=cb?'确认':'好';}
+  // 重置 icon 动画（如果连续打开两次）
+  const ico_el=$('m-ico');
+  ico_el.style.animation='none';void ico_el.offsetWidth;ico_el.style.animation='';
+  modal.classList.add('on');
+}
+function closeModal(){
+  const modal=$('modal');
+  const cancel=modal.querySelector('.m-cancel');
+  if(cancel){cancel.style.display='';$('m-ok').textContent='确认';}
+  modal.classList.add('closing');
+  let _r=false;
+  const _end=()=>{if(_r)return;_r=true;modal.classList.remove('on','closing');};
+  modal.querySelector('.modal-box').addEventListener('transitionend',_end,{once:true});
+  setTimeout(_end,280);
+}
+
+/* ── SPLASH DUST ── */
+
+/* ═══════════════════════════════════════════════════
+   ACCESSIBILITY  ──  辅助功能系统
+═══════════════════════════════════════════════════ */
+const A11Y_KEY = 'ocrab_a11y';
+const _a11y = (() => {
+  try { return JSON.parse(localStorage.getItem(A11Y_KEY) || '{}'); }
+  catch { return {}; }
+})();
+function _saveA11y() { try { localStorage.setItem(A11Y_KEY, JSON.stringify(_a11y)); } catch {} }
+
+function setFontSize(size) {
+  _a11y.fontSize = size;
+  _saveA11y();
+  applyA11y();
+}
+
+/* ═══ 孩童模式 ═══ */
+const CHILD_TEXTS = {
+  // 操作指南
+  hint1: ['点<b>「出海捞蟹」</b>——20秒内快速点击，⭐稀有+3，👑传说+10',
+          '点<b>「出海捞蟹」</b>按钮，然后点屏幕上出现的螃蟹，越多越好！'],
+  hint2: ['盯<b>价格走势</b>和市场情绪——低价囤货，高价出手，差价归你',
+          '看价格：<b>便宜的时候买、贵的时候卖</b>，赚的钱归你'],
+  hint3: ['用<b>涨跌预测</b>押注方向，猜对奖励 +3 只（有冷却期）',
+          '猜价格会涨还是跌，<b>猜对了送你3只螃蟹</b>'],
+  hint4: ['关注<b>市场事件</b>——巴菲特、索罗斯等传奇人物不定期降临',
+          '有时候会出现<b>特别事件</b>，价格会突然变很多'],
+  // 按钮
+  quickBuy:  ['↑ 全部买入', '↑ 全部买入'],
+  quickSell: ['↓ 全部卖出', '↓ 全部卖出'],
+  // modal
+  cancel: ['再想想', '不要'],
+  // circuit
+  cbTitle: ['市场熔断', '暂停一下'],
+  cbBody:  ['价格剧烈波动<br>交易暂停，请稍候', '价格变化太大了<br>等几秒就好'],
+  // battle close
+  brClose: ['今天辛苦了，带着收获回港 🦀', '好的，回去 🦀'],
+  // a11y
+  a11yTitle: ['辅助功能', '让游戏更好玩'],
+  a11ySub:   ['这里的每一个开关，都是为了让你玩得更舒服。<br>没有对错，只有适不适合你。',
+              '下面的开关可以帮你调整游戏，试试看哪个让你玩得更开心。'],
+  // a11y descriptions
+  a11yMotion: ['关闭大部分过渡效果，适合前庭障碍、容易眩晕或偏头痛的玩家',
+               '关掉画面的晃动和闪烁，看着更舒服'],
+  a11yColorblind: ['以蓝橙替代红绿区分涨跌，适合色觉差异的玩家',
+                   '用蓝色和橙色代替红色绿色，更容易分辨'],
+  a11yHc: ['加深颜色对比，界面元素更清晰可辨',
+           '让文字和背景的颜色差更大，看得更清楚'],
+  a11yWarm: ['偏暖色调，降低蓝光，适合长时间游玩或眼睛疲劳时',
+             '让屏幕变得暖暖的黄色，眼睛不容易累'],
+  a11ySpacing: ['加宽文字行距，适合阅读障碍或需要更清晰排版的玩家',
+                '让每行字之间空得更开，读起来更轻松'],
+  a11yOnehand: ['放大操作按钮与点击区域，适合单手持机或上肢活动受限的玩家',
+                '把所有按钮变大，一只手也能轻松操作'],
+  a11yTouch: ['扩大所有可点击元素的触控范围，适合精细动作困难的玩家',
+              '把按钮的可以点到的范围变大，不容易按错'],
+  a11yConfirm: ['每次买卖前弹出二次确认，避免误操作',
+                '买或卖之前会再问你一次"确定吗？"'],
+  a11yDur: ['为反应速度不同的玩家提供更充裕的节奏',
+            '捞蟹的时间可以改成更长，不用那么赶'],
+  a11ySound: ['买入、卖出、捕捞时发出轻提示音，辅助视力受限玩家确认操作',
+              '按按钮的时候会发出声音，让你知道按到了'],
+  a11yHaptic: ['操作时通过震动确认，适合听力受限或偏好触觉反馈的玩家',
+               '按按钮的时候手机会震一下'],
+  a11yFont: ['标准到特大四档，适合不同视力需求',
+             '把字变大，选一个你看得最舒服的'],
+  // crisis
+  crisisTitle: ['如果今天很难', '如果你现在很难过'],
+  crisisNote:  ['随时可以拨打，不需要理由。', '打电话不要钱，不用害怕，会有人听你说话。'],
+  // inclusion
+  incTitle:  ['Opencarb+ Reload 为每一个人设计', '这个游戏是给所有人玩的'],
+  incP1:     ['无论你今天带着什么来到这里——', '不管你是谁——'],
+  incClose:  ['你来这里，就属于这里。', '你来了就是这里的人。'],
+  // welcome
+  wcTap: ['轻触任意位置继续', '点这里开始游戏'],
+  // welcome screen
+  wcTitle: ['欢迎来到<br>Opencarb<em>+</em>Reload', '这是一个<br>螃蟹买卖游戏！<em>🦀</em>'],
+  wcSub: ['感谢你来到这里。<br>无论你带着什么来，<br>都值得被好好对待。',
+           '抓螃蟹 → 卖掉赚钱 → 再买更多螃蟹<br>就这么简单！'],
+  // splash
+  spSub: ['Reload', '螃蟹买卖小游戏'],
+  // section headers
+  shMarket: ['实时行情', '现在螃蟹多少钱'],
+  shAsset: ['我的资产', '我有多少钱和螃蟹'],
+  shTrade: ['交易', '买卖螃蟹'],
+  shLog: ['成交记录', '买卖记录'],
+  shAch: ['成就', '成就'],
+  shDaily: ['每日挑战', '今天的任务'],
+  // price card
+  moodLabel: ['市场情绪', '大家觉得'],
+  // asset card
+  lblBal: ['可用资金', '我的钱'],
+  lblHold: ['螃蟹库存', '我的螃蟹'],
+  lblPnl: ['持仓盈亏', '赚了还是亏了'],
+  lblStreak: ['连续交易天数', '连续玩了几天'],
+  // trade
+  tradeTips: [null, ['螃蟹便宜的时候买，贵的时候卖，差价就是你赚的钱！',
+    '先去抓几只螃蟹，然后等价格涨了再卖掉！',
+    '看价格的数字：数字变大就是涨了，变小就是跌了',
+    '不知道怎么办？先点「出海捞蟹」抓几只再说！']],
+  qtyLabel: ['交易数量', '一次买/卖几只'],
+  predLabel: ['下一波行情预测（猜对 +3只）', '猜一猜：接下来螃蟹会涨价还是降价？猜对送3只！'],
+  // game stats
+  gsCombo: ['连击', '连续点到'],
+  gsBest: ['最高纪录', '你的最好成绩'],
+  gsInv: ['当前库存', '你有几只螃蟹'],
+  gsCaught: ['已捞', '抓到了'],
+  // battle result
+  brEp: ['今日出海 · HAUL REPORT', '今天抓了多少螃蟹'],
+  brBarLabel: ['捕捞效率', '抓得怎么样'],
+  brVerdict: {
+    record: ['NEW RECORD', '新纪录！🎉'],
+    victory: ['VICTORY', '太棒了！'],
+    complete: ['COMPLETE', '完成！'],
+  },
+  brRowLabels: [
+    ['本次捕获', '这次抓到的'],
+    ['历史最佳', '你最多一次抓的'],
+    ['入库后总量', '加起来一共有'],
+  ],
+  // catch button
+  catchBtn: ['出海捞蟹（20秒）', '去抓螃蟹！🦀'],
+  catchHint: ['⭐ 稀有+3 · 👑 传说+10', '点屏幕上的螃蟹！'],
+  // game header
+  gameTitle: ['出海捞蟹', '抓螃蟹！'],
+  gameSub: ['螃蟹就在眼前，别手软', '快点点点点！'],
+};
+
+function _isChild() { return !!_a11y.child; }
+
+function _childText(key) {
+  const t = CHILD_TEXTS[key];
+  if (!t) return null;
+  return t[_isChild() ? 1 : 0];
+}
+
+function applyChildMode() {
+  const on = _isChild();
+  // 文案替换
+  const pairs = [
+    ['.h-steps .h-step:nth-child(1) .h-text', 'hint1'],
+    ['.h-steps .h-step:nth-child(2) .h-text', 'hint2'],
+    ['.h-steps .h-step:nth-child(3) .h-text', 'hint3'],
+    // hint4已删除
+  ];
+  pairs.forEach(([sel, key]) => {
+    const el = document.querySelector(sel);
+    if (el) el.innerHTML = _childText(key);
+  });
+  // 按钮文案
+  document.querySelectorAll('.quick-btn.buy span').forEach(el => el.textContent = _childText('quickBuy'));
+  document.querySelectorAll('.quick-btn.sell span').forEach(el => el.textContent = _childText('quickSell'));
+  // modal cancel
+  const mc = document.querySelector('.m-cancel');
+  if (mc) mc.textContent = _childText('cancel');
+  // circuit
+  const cbt = document.querySelector('.cb-ttl');
+  if (cbt) cbt.textContent = _childText('cbTitle');
+  const cbb = document.querySelector('.cb-body');
+  if (cbb) cbb.innerHTML = _childText('cbBody');
+  // a11y title/sub
+  const at = document.querySelector('.a11y-title');
+  if (at) at.textContent = _childText('a11yTitle');
+  const as = document.querySelector('.a11y-subtitle');
+  if (as) as.innerHTML = _childText('a11ySub');
+  // a11y descriptions
+  const descMap = {
+    'a11y-motion': 'a11yMotion', 'a11y-colorblind': 'a11yColorblind',
+    'a11y-hc': 'a11yHc', 'a11y-warm': 'a11yWarm', 'a11y-spacing': 'a11ySpacing',
+    'a11y-onehand': 'a11yOnehand', 'a11y-touch': 'a11yTouch',
+    'a11y-confirm': 'a11yConfirm', 'a11y-sound': 'a11ySound', 'a11y-haptic': 'a11yHaptic',
+  };
+  Object.entries(descMap).forEach(([toggleId, key]) => {
+    const toggle = document.getElementById(toggleId);
+    if (!toggle) return;
+    const row = toggle.closest('.a11y-row');
+    if (!row) return;
+    const desc = row.querySelector('.a11y-row-desc');
+    if (desc) desc.textContent = _childText(key);
+  });
+  // font desc
+  const fontDesc = document.querySelector('.a11y-font-row .a11y-row-desc');
+  if (fontDesc) fontDesc.textContent = _childText('a11yFont');
+  // duration desc
+  const durDesc = document.querySelector('.a11y-duration-row .a11y-row-desc');
+  if (durDesc) durDesc.textContent = _childText('a11yDur');
+  // crisis
+  const ct = document.querySelector('.a11y-crisis-title');
+  if (ct) ct.textContent = _childText('crisisTitle');
+  const cn = document.querySelector('.a11y-crisis-note');
+  if (cn) cn.textContent = _childText('crisisNote');
+  // inclusion
+  const it = document.querySelector('.a11y-inclusion-title');
+  if (it) it.textContent = _childText('incTitle');
+  const ic = document.querySelector('.a11y-inclusion-close strong');
+  if (ic) ic.textContent = _childText('incClose');
+  // welcome tap & texts
+  const wt = document.getElementById('wc-tap');
+  if (wt) wt.textContent = _childText('wcTap');
+  const wcT = document.getElementById('wc-title');
+  if (wcT) wcT.innerHTML = _childText('wcTitle');
+  const wcS = document.getElementById('wc-sub');
+  if (wcS) wcS.innerHTML = _childText('wcSub');
+  // 捞蟹按钮文案
+  const _ct=document.querySelector('.cbn-title');
+  if(_ct){_ct.textContent=on?'去抓螃蟹！':'出海捞蟹';}
+  const _cs=document.querySelector('.cbn-sub');
+  if(_cs){_cs.textContent=on?'点这里然后疯狂点螃蟹！':'⭐ +3 · 👑 +10';}
+  const _cg=document.querySelector('.cbn-go');
+  if(_cg){_cg.textContent=on?'GO! →':'开始 →';}
+  // splash保持英文，不替换
+  // section headers
+  const shMap = {'shMarket':0,'shAsset':1,'shTrade':2,'shLog':3,'shAch':4,'shDaily':5};
+  const shEls = document.querySelectorAll('.sh>span');
+  const shKeys = ['shMarket','shAsset',null,'shTrade',null,null,null,'shAch',null,'shDaily'];
+  // 用更可靠的方式——找到每个sh并根据文字内容匹配
+  document.querySelectorAll('.sh>span').forEach(sp => {
+    const orig = sp.dataset.origText || sp.textContent;
+    if (!sp.dataset.origText) sp.dataset.origText = orig;
+    const map = {'实时行情':'shMarket','我的资产':'shAsset','交易':'shTrade','成交记录':'shLog','成就':'shAch','每日挑战':'shDaily',
+      '现在螃蟹多少钱':'shMarket','我有多少钱和螃蟹':'shAsset','买卖螃蟹':'shTrade','买卖记录':'shLog','今天的任务':'shDaily'};
+    const key = map[orig] || map[sp.textContent];
+    if (key) sp.textContent = _childText(key);
+  });
+  // mood label
+  const ml = document.querySelector('.mood-lbl');
+  if (ml) { if(!ml.dataset.orig) ml.dataset.orig=ml.textContent; ml.textContent = _childText('moodLabel'); }
+  // asset labels
+  document.querySelectorAll('.abox-lbl').forEach(el => {
+    if(!el.dataset.orig) el.dataset.orig=el.textContent;
+    const m = {'可用资金':'lblBal','螃蟹库存':'lblHold','我的钱':'lblBal','我的螃蟹':'lblHold'};
+    const k = m[el.dataset.orig]||m[el.textContent];
+    if(k) el.textContent = _childText(k);
+  });
+  // pnl label
+  const pl = document.querySelector('.pnl-lbl');
+  if (pl) { if(!pl.dataset.orig) pl.dataset.orig=pl.textContent; pl.textContent = _childText('lblPnl'); }
+  // streak label
+  const sl = document.querySelector('.streak-lbl');
+  if (sl) { if(!sl.dataset.orig) sl.dataset.orig=sl.textContent; sl.textContent = _childText('lblStreak'); }
+  // qty label
+  const ql = document.querySelector('.qty-lbl');
+  if (ql) { if(!ql.dataset.orig) ql.dataset.orig=ql.textContent; ql.textContent = _childText('qtyLabel'); }
+  // pred label
+  const pdl = document.querySelector('.pred-lbl');
+  if (pdl) { if(!pdl.dataset.orig) pdl.dataset.orig=pdl.textContent; pdl.textContent = _childText('predLabel'); }
+  // trade tip — 孩童模式用专属tips
+  if (on) {
+    const tips = CHILD_TEXTS.tradeTips[1];
+    if (tips) { const te=document.getElementById('el-trade-tip'); if(te) te.textContent=tips[Math.random()*tips.length|0]; }
+  }
+  // catch button
+  const cb = document.querySelector('.catch-btn');
+  if (cb) {
+    const spans = cb.childNodes;
+    // 找到文本节点更新
+    for (const n of spans) {
+      if (n.nodeType === 3 && n.textContent.trim()) {
+        n.textContent = on ? ' 去抓螃蟹！' : ' 出海捞蟹（20秒）';
+      }
+    }
+    const ch = cb.querySelector('.catch-hint');
+    if (ch) ch.textContent = _childText('catchHint');
+  }
+  // game header
+  const gt = document.querySelector('.g-title');
+  if (gt) { if(!gt.dataset.orig) gt.dataset.orig=gt.textContent; gt.textContent = _childText('gameTitle'); }
+  // game stats labels
+  document.querySelectorAll('.gs-l').forEach(el => {
+    if(!el.dataset.orig) el.dataset.orig=el.textContent;
+    const m = {'已捞':'gsCaught','连击':'gsCombo','最高纪录':'gsBest','当前库存':'gsInv',
+      '抓到了':'gsCaught','连续点到':'gsCombo','你的最好成绩':'gsBest','你有几只螃蟹':'gsInv'};
+    const k = m[el.dataset.orig]||m[el.textContent];
+    if(k) el.textContent = _childText(k);
+  });
+  // battle result ep
+  const brep = document.querySelector('.br-ep');
+  if (brep) { if(!brep.dataset.orig) brep.dataset.orig=brep.textContent; brep.textContent = _childText('brEp'); }
+  // battle bar label
+  const bbl = document.querySelector('.br-bar-lbl');
+  if (bbl) { if(!bbl.dataset.orig) bbl.dataset.orig=bbl.textContent; bbl.textContent = _childText('brBarLabel'); }
+  // pnl label
+  const _pnlEl = document.querySelector('.pnl-lbl');
+  if(_pnlEl){if(!_pnlEl.dataset.orig) _pnlEl.dataset.orig=_pnlEl.textContent; _pnlEl.textContent = on?'赚了还是亏了':_pnlEl.dataset.orig;}
+  // pred label
+  const _predEl = document.querySelector('.pred-lbl');
+  if(_predEl){if(!_predEl.dataset.orig) _predEl.dataset.orig=_predEl.textContent; _predEl.textContent = _childText('predLabel');}
+}
+
+// 螃蟹存活时间倍率
+function _crabDurMul() {
+  if (_isChild()) return getGameDuration() >= 35 ? 2.0 : 1.5;
+  return 1;
+}
+// spawn间隔倍率
+function _spawnMul() {
+  return _isChild() ? 1.5 : 1;
+}
+// scary概率阈值
+function _scaryThresh() {
+  return _isChild() ? .92 : .79;
+}
+
+function applyA11y() {
+  const b = document.body;
+  // 字体等级
+  b.classList.remove('a11y-text-md','a11y-text-lg','a11y-text-xl');
+  const fs = _a11y.fontSize || 'sm';
+  if (fs !== 'sm') b.classList.add('a11y-text-' + fs);
+  ['sm','md','lg','xl'].forEach(s => {
+    const el = $('fs-'+s); if (!el) return;
+    el.classList.toggle('on', fs === s);
+    el.setAttribute('aria-checked', fs === s ? 'true' : 'false');
+  });
+  // 游戏时长按钮
+  const dur = _a11y.duration || 20;
+  [20,35,60].forEach(d => {
+    const el = $('dur-'+d); if (!el) return;
+    el.classList.toggle('on', dur === d);
+    el.setAttribute('aria-checked', dur === d ? 'true' : 'false');
+  });
+  // 布尔开关
+  ['hc','colorblind','motion','onehand','touch','warm','spacing','sound','haptic','confirm','priceread','announce','child'].forEach(k => {
+    b.classList.toggle('a11y-'+k, !!_a11y[k]);
+    const el = $('a11y-'+k); if (!el) return;
+    el.classList.toggle('on', !!_a11y[k]);
+    el.setAttribute('aria-checked', _a11y[k] ? 'true' : 'false');
+  });
+  applyChildMode();
+}
+// 孩童模式切换时蓝幕
+function toggleChildWithSweep(){
+  sweepTransition(()=>{
+    _a11y.child=!_a11y.child;
+    _saveA11y();
+    applyA11y();
+    const el=$('a11y-child');
+    if(el)el.classList.toggle('on',_a11y.child);
+    el?.setAttribute('aria-checked',_a11y.child?'true':'false');
+  });
+}
+
+function setDuration(secs) {
+  _a11y.duration = secs;
+  _saveA11y();
+  applyA11y();
+}
+
+function toggleA11y(key) {
+  _a11y[key] = !_a11y[key];
+  _saveA11y();
+  applyA11y();
+  doVib([8]);
+  if (key === 'sound' && _a11y.sound) { if(!_ac) _getAC(); playTick('confirm'); }
+}
+
+function openA11y(){
+  $('a11y-panel').classList.add('on');
+}
+function closeA11y(){
+  const p=$('a11y-panel');
+  p.classList.add('closing');
+  setTimeout(()=>p.classList.remove('on','closing'),350);
+}
+
+function getGameDuration() { return _a11y.duration || 20; }
+
+/* 震动——只有 haptic 开启时触发 */
+function doVib(p) {
+  if (!_a11y.haptic) return;
+  try { navigator.vibrate && navigator.vibrate(p); } catch {}
+}
+
+/* 音效系统（Web Audio API，无需外部资源）*/
+let _ac = null;
+function _getAC() {
+  if (!_ac) try { _ac = new (window.AudioContext || window.webkitAudioContext)(); } catch {}
+  return _ac;
+}
+function playTick(type) {
+  if (!_a11y.sound) return;
+  const ac = _getAC(); if (!ac) return;
+  try {
+    const osc = ac.createOscillator();
+    const gain = ac.createGain();
+    osc.connect(gain); gain.connect(ac.destination);
+    const t = ac.currentTime;
+    const cfg = {
+      buy:     [880,  .10, .20],
+      sell:    [660,  .09, .20],
+      error:   [220,  .08, .28],
+      confirm: [1100, .06, .13],
+      catch:   [1400, .08, .06],
+      golden:  [1760, .12, .2],
+      record:  [990,  .07, .20],
+    }[type] || [660, .07, .15];
+    osc.frequency.value = cfg[0];
+    gain.gain.setValueAtTime(cfg[1], t);
+    gain.gain.exponentialRampToValueAtTime(.001, t + cfg[2]);
+    osc.start(t); osc.stop(t + cfg[2] + .05);
+  } catch {}
+}
+/* 语音朗读倒计时（announce 模式）*/
+/* 语音系统 — 必须在用户手势后调用才能在移动端生效 */
+let _ttsUnlocked = false;
+function _unlockTTS() {
+  if (_ttsUnlocked) return;
+  try {
+    // iOS 要求先 speak 一个空白 utterance 来解锁
+    const u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+    _ttsUnlocked = true;
+  } catch {}
+}
+function _speak(text, rate) {
+  try {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN'; u.volume = 1; u.rate = rate || 1.1;
+    // 如果 speechSynthesis 被暂停，先 resume
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    window.speechSynthesis.speak(u);
+  } catch {}
+}
+function announceCountdown(n) {
+  if (!_a11y.announce) return;
+  _speak(String(n) + '秒', 1.3);
+}
+
+/* ═══════════════════════════════════════════════════
+   ACHIEVEMENTS  ──  成就系统
+═══════════════════════════════════════════════════ */
+const ACHIEVEMENTS = [
+  // 入门
+  { id:'first_buy',   icon:'🦀', name:'第一只螃蟹', desc:'买入至少3只', check:()=>S.totalBuys>=3 },
+  { id:'first_sell',  icon:'💸', name:'初次交易',   desc:'完成3笔交易', check:()=>(S.tradeCount||0)>=3 },
+  { id:'haul5',       icon:'🎣', name:'初次出海',   desc:'单次捞蟹8只以上', check:()=>(S.bestCatch||0)>=8 },
+  // 进阶
+  { id:'haul10',      icon:'⭐', name:'小有收获',   desc:'单次捞蟹15只以上', check:()=>(S.bestCatch||0)>=15 },
+  { id:'haul25',      icon:'🏆', name:'捕蟹高手',   desc:'单次捞蟹30只以上', check:()=>(S.bestCatch||0)>=30 },
+  { id:'haul40',      icon:'🐙', name:'深海霸主',   desc:'单次捞蟹50只以上', check:()=>(S.bestCatch||0)>=50 },
+  { id:'profit1k',    icon:'💰', name:'小有积蓄',   desc:'总资产超过2500', check:()=>(S.balance+S.holdings*S.price)>=2500 },
+  { id:'profit5k',    icon:'💎', name:'螃蟹富翁',   desc:'总资产超过8000', check:()=>(S.balance+S.holdings*S.price)>=8000 },
+  { id:'profit10k',   icon:'🏦', name:'螃蟹银行家', desc:'总资产超过10000', check:()=>(S.balance+S.holdings*S.price)>=10000 },
+  // 坚持
+  { id:'streak3',     icon:'🔥', name:'三日不懈',   desc:'连续3天交易', check:()=>(S.streak||0)>=3 },
+  { id:'streak7',     icon:'⚡', name:'周周不息',   desc:'连续7天交易', check:()=>(S.streak||0)>=7 },
+  { id:'trade50',     icon:'📊', name:'活跃交易者', desc:'累计交易80笔', check:()=>(S.tradeCount||0)>=80 },
+  // 特殊
+  { id:'golden_crab', icon:'👑', name:'传说',       desc:'捕获一只黄金螃蟹', check:()=>!!(S.gotGolden) },
+  { id:'pred5',       icon:'🔮', name:'预言家',     desc:'预测正确10次', check:()=>(S.predCorrect||0)>=10 },
+  { id:'total100',    icon:'🌊', name:'百蟹归仓',   desc:'累计捕获200只', check:()=>(S.totalCaught||0)>=200 },
+];
+
+function showAchDetail(id){const a=ACHIEVEMENTS.find(x=>x.id===id);if(!a)return;const ul=S.achievements||{};const done=!!ul[a.id];const ts=ul[a.id]?new Date(ul[a.id]).toLocaleDateString('zh-CN'):'';showModal(a.icon,a.name,a.desc+(done?'\n\n✅ 已解锁 · '+ts:'\n\n🔒 尚未解锁'));}
+function checkAchievements() {
+  const unlocked = S.achievements || {};
+  let hasNew = false;
+  ACHIEVEMENTS.forEach(a => {
+    if (!unlocked[a.id] && a.check()) {
+      unlocked[a.id] = Date.now();
+      hasNew = true;
+      toast('🏅 成就解锁：' + a.name, 3000);
+      setTimeout(()=>Herm._show('刚刚解锁了「' + a.name + '」。\n……\n<em>（Herm-01 给了个不动声色的点头。）</em>'), 1200);
+    }
+  });
+  S.achievements = unlocked;
+  renderAchievements();
+  if (hasNew) save(true);
+}
+
+function renderAchievements() {
+  const grid = $('achieve-grid'); if (!grid) return;
+  const unlocked = S.achievements || {};
+  const wrap = $('achieve-wrap');
+  if (!wrap) return;
+  // 始终显示所有成就，点击查看详情
+  wrap.classList.add('has-new');
+  const ul = S.achievements || {};
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const done = !!ul[a.id];
+    const ts = ul[a.id] ? new Date(ul[a.id]).toLocaleDateString('zh-CN') : '';
+    return '<div class="ach-item ' + (done?'unlocked':'locked') + '"' +
+      ' onclick="showAchDetail(\'' + a.id + '\')"' +
+      ' role="button" tabindex="0"' +
+      ' aria-label="' + a.name + (done?'，已解锁':'，未解锁') + '">' +
+      '<div class="ach-icon">' + a.icon + '</div>' +
+      '<div class="ach-name ' + (done?'lit':'') + '">' + a.name + '</div>' +
+      (done ? '<div class="ach-date">' + ts + '</div>' : '<div class="ach-lock">🔒</div>') +
+    '</div>';
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   DAILY CHALLENGES  ──  每日挑战
+═══════════════════════════════════════════════════ */
+const DAILY_POOL = [
+  { id:'buy5',     name:'买入5只螃蟹',     desc:'任意价格买入5只',        reward:'+10只', rewardFn:()=>{S.holdings+=10;} },
+  { id:'buy20',    name:'大手笔买入',       desc:'单次买入20只以上',       reward:'+¥50',  rewardFn:()=>{S.balance+=50;} },
+  { id:'haul',     name:'出海一次',         desc:'完成一次捞蟹',           reward:'+5只',  rewardFn:()=>{S.holdings+=5;} },
+  { id:'haul15',   name:'丰收出海',         desc:'单次捞蟹15只以上',       reward:'+¥30',  rewardFn:()=>{S.balance+=30;} },
+  { id:'predict',  name:'预测两次',         desc:'提交两次涨跌预测',       reward:'+¥20',  rewardFn:()=>{S.balance+=20;} },
+  { id:'predwin',  name:'神算子',           desc:'预测正确一次',           reward:'+8只',  rewardFn:()=>{S.holdings+=8;} },
+  { id:'sell',     name:'卖出螃蟹',         desc:'卖出至少1只',            reward:'+¥15',  rewardFn:()=>{S.balance+=15;} },
+  { id:'sellall',  name:'清仓大甩卖',       desc:'一次性全部卖出',           reward:'+¥40',  rewardFn:()=>{S.balance+=40;} },
+  { id:'watch',    name:'观察5次行情',      desc:'等待5个价格周期',        reward:'+¥10',  rewardFn:()=>{S.balance+=10;} },
+  { id:'trade3',   name:'交易3笔',         desc:'完成3笔买入或卖出',       reward:'+¥25',  rewardFn:()=>{S.balance+=25;} },
+];
+
+let _dailyToday = null;
+function _getDailyChallenges() {
+  const today = new Date().toDateString();
+  if (_dailyToday && _dailyToday.date === today) return _dailyToday;
+  // 每天用日期做种子选3个挑战
+  const seed = today.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const pool = [...DAILY_POOL];
+  const selected = [];
+  let s = seed;
+  while (selected.length < 4 && pool.length) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const idx = s % pool.length;
+    selected.push({...pool[idx], done:false});
+    pool.splice(idx,1);
+  }
+  // 恢复进度
+  const saved = S.dailyProgress || {};
+  if (saved.date === today) {
+    selected.forEach((ch,i) => { if (saved.done && saved.done[i]) ch.done = true; });
+  }
+  _dailyToday = { date: today, challenges: selected };
+  return _dailyToday;
+}
+
+function _saveDailyProgress() {
+  if (!_dailyToday) return;
+  S.dailyProgress = {
+    date: _dailyToday.date,
+    done: _dailyToday.challenges.map(c=>c.done),
+  };
+  save(false);
+}
+
+// 挑战进度追踪
+let _dailyBuyCount=0, _dailyHauled=false, _dailyPredCount=0, _dailySold=false, _dailyWatchCount=0, _dailyTradeCount=0, _dailyMaxBuy=0, _dailyHaulMax=0, _dailySoldAll=false, _dailyPredWin=false;
+
+function _trackDaily(event) {
+  const d = _getDailyChallenges();
+  d.challenges.forEach((ch,i) => {
+    if (ch.done) return;
+    let hit = false;
+    if (ch.id==='buy5'    && event==='buy')     { _dailyBuyCount++;  if(_dailyBuyCount>=5) hit=true; }
+    if (ch.id==='buy20'   && event==='buy')     { if(lot>=20) hit=true; }
+    if (ch.id==='haul'    && event==='haul')    { hit = true; }
+    if (ch.id==='haul15'  && event==='haul')    { if((S.bestCatch||0)>=15) hit=true; }
+    if (ch.id==='predict' && event==='predict') { _dailyPredCount++; if(_dailyPredCount>=2) hit=true; }
+    if (ch.id==='predwin' && event==='predwin') { hit=true; }
+    if (ch.id==='sell'    && event==='sell')    { hit = true; }
+    if (ch.id==='sellall' && event==='sellall') { hit = true; }
+    if (ch.id==='watch'   && event==='watch')   { _dailyWatchCount++; if(_dailyWatchCount>=5) hit=true; }
+    if (ch.id==='trade3'  && (event==='buy'||event==='sell')) { _dailyTradeCount++; if(_dailyTradeCount>=3) hit=true; }
+    if (hit) {
+      ch.done = true;
+      ch.rewardFn();
+      _saveDailyProgress();
+      renderDailyChallenges();
+      toast('✅ 挑战完成：' + ch.name + '  奖励 ' + ch.reward, 3200);
+      setTimeout(()=>Herm._show('今日挑战「' + ch.name + '」完成了。\n奖励已经到账。\n<em>……你挺厉害的嘛。</em>'), 800);
+    }
+  });
+}
+
+function renderDailyChallenges() {
+  const d = _getDailyChallenges();
+  const list = $('daily-list'); if (!list) return;
+  list.innerHTML = d.challenges.map(ch =>
+    '<div class="daily-item' + (ch.done?' done':'') + '">' +
+      '<div class="daily-check">' + (ch.done?'✓':'') + '</div>' +
+      '<div class="daily-body">' +
+        '<div class="daily-name">' + ch.name + '</div>' +
+        '<div class="daily-desc">' + ch.desc + '</div>' +
+      '</div>' +
+      '<div class="daily-reward">' + ch.reward + '</div>' +
+    '</div>'
+  ).join('');
+  const reset = $('daily-reset');
+  if (reset) {
+    const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(0,0,0,0);
+    const diff = Math.round((tomorrow-Date.now())/1000/60/60);
+    reset.textContent = diff + ' 小时后刷新';
+  }
+}
+
+/* 价格朗读 */
+let _lastSpokenPrice = 0;
+function maybeReadPrice(price) {
+  if (!_a11y.priceread) return;
+  const rounded = Math.round(price * 10) / 10;
+  if (rounded === _lastSpokenPrice) return;
+  _lastSpokenPrice = rounded;
+  _speak('价格 ' + rounded, 1.2);
+}
+
+/* 防误触：trade 之前先确认 */
+function tradeWithConfirm(type) {
+  if (!_a11y.confirm) { trade(type); return; }
+  const verb = type==='buy' ? '买入' : '卖出';
+  const cost = fmt(S.price * lot);
+  showModal(type==='buy'?'🛒':'💼', verb+'确认',
+    verb+' '+lot+' 只螃蟹，花费 '+cost+'，确认吗？',
+    () => trade(type));
+}
+
+/* ── BOOT ── */
+
+function toggleCurPicker(){
+  const p=document.getElementById('cur-picker');
+  if(!p)return;
+  if(p.style.display==='none'){
+    p.style.display='';
+    // 高亮当前币种
+    const c=cur();
+    p.querySelectorAll('.cp-opt').forEach(o=>o.classList.toggle('on',o.dataset.cur===c));
+  }else{
+    p.style.display='none';
+  }
+}
+function selectCur(c){
+  $('currency').value=c;
+  onCurChange();
+  $('cur-code').textContent=c;
+  toggleCurPicker();
+}
+
+/* 开屏年龄选择——点选后直接蓝幕进入 */
+function splashPick(age) {
+  // 高亮
+  document.querySelectorAll('.sp-age-btn').forEach(b => b.classList.remove('selected'));
+  if(event&&event.target) event.target.classList.add('selected');
+  // 存状态
+  S.ageGroup = age;
+  S.seenWelcome = true;
+  save(false);
+  if (age === 'child') {
+    _a11y.child = true; _a11y.touch = true; _a11y.confirm = true; _a11y.sound = true;
+    _saveA11y(); applyA11y();
+  }
+  // 短暂高亮后蓝幕扫入
+  setTimeout(() => {
+    $('splash').classList.add('exit');
+    const curtain = $('sp-curtain');
+    if (curtain) curtain.classList.add('sweep');
+    // 蓝幕扫到中间(280ms)时：splash变透明+app可见
+    setTimeout(() => {
+      $('splash').classList.add('behind');
+      $('app').classList.add('on');
+    }, 280);
+    // 蓝幕扫完后删splash
+    setTimeout(() => $('splash')?.remove(), 850);
+  }, 250);
+  // Herm
+  const d = 1800;
+  if (age === 'child') {
+    setTimeout(() => Herm._show('你好呀！🦀\n我是 Herm，你的小助手。\n\n<em>先点那个「出海捞蟹」按钮试试看！</em>', 300), d);
+  } else {
+    setTimeout(() => Herm._show('欢迎。\n螃蟹价格每 1.8 秒变动一次。\n\n<em>低价买入，高价卖出——试试看？\n曲线图上虚线是均衡价 ¥40。</em>', 300), d);
+  }
+}
+
+/* 全局蓝幕转场 */
+function sweepTransition(onMiddle, onDone) {
+  const c = $('g-curtain');
+  if (!c) { if(onMiddle)onMiddle(); if(onDone)onDone(); return; }
+  c.classList.remove('sweep');
+  void c.offsetWidth;
+  c.classList.add('sweep');
+  // 蓝幕到中间时执行
+  setTimeout(() => { if(onMiddle) onMiddle(); }, 125);
+  // 蓝幕扫完
+  setTimeout(() => { c.classList.remove('sweep'); if(onDone) onDone(); }, 530);
+}
+
+function toggleMenu(){
+  const m=document.getElementById('quick-menu');
+  if(!m)return;
+  m.style.display=m.style.display==='none'?'':'none';
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  if(S.hintDismissed){const hw=$('hint-wrap');if(hw)hw.style.display='none';}
+  applyA11y();
+  render();
+  renderLog();
+  renderAchievements();
+  renderDailyChallenges();
+  $('btn-buy').addEventListener('pointerdown', e=>addRipple('rl-buy', e));
+  // 首次任意触摸解锁 TTS，保证移动端语音功能可用
+  const _ttsUnlockHandler = () => { _unlockTTS(); document.removeEventListener('pointerdown', _ttsUnlockHandler); };
+  document.addEventListener('pointerdown', _ttsUnlockHandler);
+  $('btn-sell').addEventListener('pointerdown',e=>addRipple('rl-sell',e));
+
+  /* 初始化 trade tip */
+  $('el-trade-tip').textContent=pick(CP.tips);
+
+  // ═══ 开屏流程 ═══
+  if (S.seenWelcome) {
+    // 老用户——1.5秒后蓝幕扫过进入
+    setTimeout(() => {
+      const c = $('sp-curtain');
+      if (c) c.classList.add('sweep');
+      setTimeout(() => {
+        $('splash').classList.add('behind');
+        $('app').classList.add('on');
+      }, 280);
+      setTimeout(() => $('splash')?.remove(), 850);
+    }, 1500);
+  } else {
+    // 新用户——1.2秒后标题上移+welcome淡入
+    setTimeout(() => $('splash').classList.add('phase2'), 1200);
+  }
+
+  setTimeout(scheduleEvent,15000);
+  Herm.init();
+});
+window.addEventListener('resize',renderChart);
+</script>
+</body>
+</html>
